@@ -21,17 +21,18 @@ flowchart TD
   Qdrant --> Context["Context Reduction"]
   Retrieval -- nein --> Context
   Context --> Router["Model Routing"]
-  Router --> Small["Small Model"]
-  Router --> Medium["Medium Model"]
-  Router --> Large["Large Model"]
-  Large --> Tools{"Large-mode Tools?"}
-  Tools -- optional --> ToolRegistry["Tool Registry"]
-  ToolRegistry --> ToolContext["Reduzierte Tool-Ergebnisse"]
-  ToolContext --> Prompt["Gehärteter Prompt"]
-  Small --> Prompt
-  Medium --> Prompt
-  Large --> Prompt
-  Prompt --> Response["Response + Metadata + Metrics"]
+  Router --> SmallPath["Small / Medium Path"]
+  Router --> LargePath["Large Path"]
+  LargePath --> ToolRouter["Tool-Router analysiert Task + Prompt"]
+  ToolRouter -- "keine relevanten Tools" --> Prompt
+  ToolRouter -- "relevante Tools" --> ToolList["Nur relevante Tool-Definitionen"]
+  ToolList --> ToolRegistry{"Optionale Tool-Ausführung"}
+  ToolRegistry --> ToolResults["Reduzierte Tool-Ergebnisse"]
+  SmallPath --> Prompt["Prompt Builder"]
+  ToolList --> Prompt
+  ToolResults --> Prompt
+  Prompt --> LLM["LLM Call: small / medium / large"]
+  LLM --> Response["Response + Metadata + Metrics"]
 ```
 
 ```text
@@ -42,6 +43,8 @@ User Request
 -> optional Qdrant Retrieval mit tenantId-Filter
 -> Context Reduction
 -> Model Routing
+-> bei large: Tool-Router filtert relevante Tools
+-> Prompt Builder mit Kontext, Tool-Liste und Tool-Ergebnissen
 -> LLM Call
 -> Response + Metadata
 ```
@@ -586,6 +589,10 @@ ai_agent_orchestrator_chat_cache_hit_rate_percent
 ## Lightweight Tool-Calling
 
 Der Prototyp unterstützt kontrollierte interne Tools. Das ist bewusst kein freier Agent-Loop, sondern eine kleine serverseitige Tool Registry mit vorgeschaltetem Tool-Router.
+
+Der Tool-Router reduziert die dem LLM bereitgestellte Tool-Oberfläche auf eine kontextspezifische Teilmenge.
+
+Ziel ist es, Prompt-Komplexität zu minimieren und die Tool-Auswahl deterministisch und nachvollziehbar zu gestalten.
 
 ```text
 Request
