@@ -1,0 +1,3356 @@
+[
+  {
+    "id": "2026-05-02T15-39-56-662Z",
+    "timestamp": "2026-05-02T15:39:56.663Z",
+    "mode": "stub",
+    "summary": {
+      "cases": 10,
+      "actualTokens": 1057,
+      "baselineTokens": 21057,
+      "savedTokens": 20000,
+      "tokensSavedPercent": 95,
+      "avgLatencyMs": 3,
+      "avgQualityScore": 90,
+      "modelDistribution": {
+        "small": 4,
+        "medium": 2,
+        "large": 4
+      },
+      "actualLlmWorkUnits": 664,
+      "baselineLlmWorkUnits": 21057,
+      "savedLlmWorkUnits": 20396,
+      "estimatedLlmWorkSavedPercent": 96.9
+    },
+    "results": [
+      {
+        "id": "simple-recipe",
+        "title": "Kuchenrezept",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 1,
+        "actualTokens": 94,
+        "baselineTokens": 2094,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.5,
+        "actualLlmWorkUnits": 25,
+        "baselineLlmWorkUnits": 2094,
+        "savedLlmWorkUnits": 2070,
+        "estimatedLlmWorkSavedPercent": 98.8,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-email",
+        "title": "Kurze Mail",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 1,
+        "actualTokens": 106,
+        "baselineTokens": 2106,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95,
+        "actualLlmWorkUnits": 28,
+        "baselineLlmWorkUnits": 2106,
+        "savedLlmWorkUnits": 2079,
+        "estimatedLlmWorkSavedPercent": 98.7,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-rewrite",
+        "title": "Umformulierung",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 4,
+        "actualTokens": 102,
+        "baselineTokens": 2102,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.1,
+        "actualLlmWorkUnits": 27,
+        "baselineLlmWorkUnits": 2102,
+        "savedLlmWorkUnits": 2076,
+        "estimatedLlmWorkSavedPercent": 98.7,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-summary",
+        "title": "Zusammenfassung",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 4,
+        "actualTokens": 105,
+        "baselineTokens": 2105,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95,
+        "actualLlmWorkUnits": 59,
+        "baselineLlmWorkUnits": 2105,
+        "savedLlmWorkUnits": 2046,
+        "estimatedLlmWorkSavedPercent": 97.2,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-technical",
+        "title": "Technische Frage",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 3,
+        "actualTokens": 100,
+        "baselineTokens": 2100,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.2,
+        "actualLlmWorkUnits": 101,
+        "baselineLlmWorkUnits": 2100,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 95.2,
+        "quality": {
+          "score": 50,
+          "rating": "needs_review",
+          "notes": [
+            "expected model medium, got large",
+            "expected classification medium, got complex"
+          ]
+        }
+      },
+      {
+        "id": "medium-compare",
+        "title": "Vergleich",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 5,
+        "actualTokens": 102,
+        "baselineTokens": 2102,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.1,
+        "actualLlmWorkUnits": 57,
+        "baselineLlmWorkUnits": 2102,
+        "savedLlmWorkUnits": 2045,
+        "estimatedLlmWorkSavedPercent": 97.3,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-architecture",
+        "title": "Architektur-Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 3,
+        "actualTokens": 109,
+        "baselineTokens": 2109,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.8,
+        "actualLlmWorkUnits": 110,
+        "baselineLlmWorkUnits": 2109,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.8,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-security",
+        "title": "Security Review",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 6,
+        "actualTokens": 113,
+        "baselineTokens": 2113,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.7,
+        "actualLlmWorkUnits": 114,
+        "baselineLlmWorkUnits": 2113,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.6,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-code-analysis",
+        "title": "Codeanalyse",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 4,
+        "actualTokens": 113,
+        "baselineTokens": 2113,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.7,
+        "actualLlmWorkUnits": 114,
+        "baselineLlmWorkUnits": 2113,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.6,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-rag",
+        "title": "RAG Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 3,
+        "actualTokens": 113,
+        "baselineTokens": 2113,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.7,
+        "actualLlmWorkUnits": 29,
+        "baselineLlmWorkUnits": 2113,
+        "savedLlmWorkUnits": 2084,
+        "estimatedLlmWorkSavedPercent": 98.6,
+        "quality": {
+          "score": 50,
+          "rating": "needs_review",
+          "notes": [
+            "expected model large, got small",
+            "expected classification complex, got simple"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "2026-05-02T15-40-59-707Z",
+    "timestamp": "2026-05-02T15:40:59.708Z",
+    "mode": "stub",
+    "summary": {
+      "cases": 10,
+      "actualTokens": 1057,
+      "baselineTokens": 21057,
+      "savedTokens": 20000,
+      "tokensSavedPercent": 95,
+      "avgLatencyMs": 4,
+      "avgQualityScore": 100,
+      "modelDistribution": {
+        "small": 3,
+        "medium": 3,
+        "large": 4
+      },
+      "actualLlmWorkUnits": 704,
+      "baselineLlmWorkUnits": 21057,
+      "savedLlmWorkUnits": 20356,
+      "estimatedLlmWorkSavedPercent": 96.7
+    },
+    "results": [
+      {
+        "id": "simple-recipe",
+        "title": "Kuchenrezept",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 1,
+        "actualTokens": 94,
+        "baselineTokens": 2094,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.5,
+        "actualLlmWorkUnits": 25,
+        "baselineLlmWorkUnits": 2094,
+        "savedLlmWorkUnits": 2070,
+        "estimatedLlmWorkSavedPercent": 98.8,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-email",
+        "title": "Kurze Mail",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 6,
+        "actualTokens": 106,
+        "baselineTokens": 2106,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95,
+        "actualLlmWorkUnits": 28,
+        "baselineLlmWorkUnits": 2106,
+        "savedLlmWorkUnits": 2079,
+        "estimatedLlmWorkSavedPercent": 98.7,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-rewrite",
+        "title": "Umformulierung",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 3,
+        "actualTokens": 102,
+        "baselineTokens": 2102,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.1,
+        "actualLlmWorkUnits": 27,
+        "baselineLlmWorkUnits": 2102,
+        "savedLlmWorkUnits": 2076,
+        "estimatedLlmWorkSavedPercent": 98.7,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-summary",
+        "title": "Zusammenfassung",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 4,
+        "actualTokens": 105,
+        "baselineTokens": 2105,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95,
+        "actualLlmWorkUnits": 59,
+        "baselineLlmWorkUnits": 2105,
+        "savedLlmWorkUnits": 2046,
+        "estimatedLlmWorkSavedPercent": 97.2,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-technical",
+        "title": "Technische Frage",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 5,
+        "actualTokens": 100,
+        "baselineTokens": 2100,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.2,
+        "actualLlmWorkUnits": 56,
+        "baselineLlmWorkUnits": 2100,
+        "savedLlmWorkUnits": 2044,
+        "estimatedLlmWorkSavedPercent": 97.3,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-compare",
+        "title": "Vergleich",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 3,
+        "actualTokens": 102,
+        "baselineTokens": 2102,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 95.1,
+        "actualLlmWorkUnits": 57,
+        "baselineLlmWorkUnits": 2102,
+        "savedLlmWorkUnits": 2045,
+        "estimatedLlmWorkSavedPercent": 97.3,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-architecture",
+        "title": "Architektur-Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 3,
+        "actualTokens": 109,
+        "baselineTokens": 2109,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.8,
+        "actualLlmWorkUnits": 110,
+        "baselineLlmWorkUnits": 2109,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.8,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-security",
+        "title": "Security Review",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 5,
+        "actualTokens": 113,
+        "baselineTokens": 2113,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.7,
+        "actualLlmWorkUnits": 114,
+        "baselineLlmWorkUnits": 2113,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.6,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-code-analysis",
+        "title": "Codeanalyse",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 5,
+        "actualTokens": 113,
+        "baselineTokens": 2113,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.7,
+        "actualLlmWorkUnits": 114,
+        "baselineLlmWorkUnits": 2113,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.6,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-rag",
+        "title": "RAG Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 3,
+        "actualTokens": 113,
+        "baselineTokens": 2113,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 94.7,
+        "actualLlmWorkUnits": 114,
+        "baselineLlmWorkUnits": 2113,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 94.6,
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "2026-05-03T14-39-20-123Z",
+    "timestamp": "2026-05-03T14:39:20.123Z",
+    "mode": "stub",
+    "summary": {
+      "cases": 12,
+      "actualTokens": 2808,
+      "baselineTokens": 26808,
+      "savedTokens": 24000,
+      "tokensSavedPercent": 89.5,
+      "avgLatencyMs": 3,
+      "avgQualityScore": 100,
+      "modelDistribution": {
+        "small": 3,
+        "medium": 3,
+        "large": 6
+      },
+      "actualLlmWorkUnits": 2112,
+      "baselineLlmWorkUnits": 26808,
+      "savedLlmWorkUnits": 24697,
+      "estimatedLlmWorkSavedPercent": 92.1,
+      "tools": {
+        "calls": 5,
+        "errors": 0,
+        "latencyMs": 1,
+        "itemsUsed": 1,
+        "avgLatencyMs": 0
+      }
+    },
+    "results": [
+      {
+        "id": "simple-recipe",
+        "title": "Kuchenrezept",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 4,
+        "actualTokens": 189,
+        "baselineTokens": 2189,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91.4,
+        "actualLlmWorkUnits": 48,
+        "baselineLlmWorkUnits": 2189,
+        "savedLlmWorkUnits": 2141,
+        "estimatedLlmWorkSavedPercent": 97.8,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-email",
+        "title": "Kurze Mail",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 1,
+        "actualTokens": 201,
+        "baselineTokens": 2201,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 90.9,
+        "actualLlmWorkUnits": 51,
+        "baselineLlmWorkUnits": 2201,
+        "savedLlmWorkUnits": 2150,
+        "estimatedLlmWorkSavedPercent": 97.7,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-rewrite",
+        "title": "Umformulierung",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 1,
+        "actualTokens": 198,
+        "baselineTokens": 2198,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91,
+        "actualLlmWorkUnits": 51,
+        "baselineLlmWorkUnits": 2198,
+        "savedLlmWorkUnits": 2148,
+        "estimatedLlmWorkSavedPercent": 97.7,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-summary",
+        "title": "Zusammenfassung",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 1,
+        "actualTokens": 200,
+        "baselineTokens": 2200,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 90.9,
+        "actualLlmWorkUnits": 111,
+        "baselineLlmWorkUnits": 2200,
+        "savedLlmWorkUnits": 2089,
+        "estimatedLlmWorkSavedPercent": 95,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-technical",
+        "title": "Technische Frage",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 5,
+        "actualTokens": 195,
+        "baselineTokens": 2195,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91.1,
+        "actualLlmWorkUnits": 108,
+        "baselineLlmWorkUnits": 2195,
+        "savedLlmWorkUnits": 2087,
+        "estimatedLlmWorkSavedPercent": 95.1,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-compare",
+        "title": "Vergleich",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 5,
+        "actualTokens": 197,
+        "baselineTokens": 2197,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91,
+        "actualLlmWorkUnits": 109,
+        "baselineLlmWorkUnits": 2197,
+        "savedLlmWorkUnits": 2088,
+        "estimatedLlmWorkSavedPercent": 95,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-architecture",
+        "title": "Architektur-Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 242,
+        "baselineTokens": 2242,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89.2,
+        "actualLlmWorkUnits": 243,
+        "baselineLlmWorkUnits": 2242,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89.2,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 1,
+        "toolItemsUsed": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-security",
+        "title": "Security Review",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 246,
+        "baselineTokens": 2246,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89,
+        "actualLlmWorkUnits": 247,
+        "baselineLlmWorkUnits": 2246,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-code-analysis",
+        "title": "Codeanalyse",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 209,
+        "baselineTokens": 2209,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 90.5,
+        "actualLlmWorkUnits": 210,
+        "baselineLlmWorkUnits": 2209,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 90.5,
+        "toolCallingEnabled": true,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-rag",
+        "title": "RAG Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 6,
+        "actualTokens": 246,
+        "baselineTokens": 2246,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89,
+        "actualLlmWorkUnits": 247,
+        "baselineLlmWorkUnits": 2246,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "tool-stats-review",
+        "title": "Tool: Stats Review",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "expectedTool": "get_stats",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 4,
+        "actualTokens": 441,
+        "baselineTokens": 2441,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 81.9,
+        "actualLlmWorkUnits": 442,
+        "baselineLlmWorkUnits": 2441,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 81.9,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 1,
+        "toolNames": [
+          "get_stats"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "tool-knowledge-search",
+        "title": "Tool: Knowledge Search",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "expectedTool": "search_knowledge",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 5,
+        "actualTokens": 244,
+        "baselineTokens": 2244,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89.1,
+        "actualLlmWorkUnits": 245,
+        "baselineLlmWorkUnits": 2244,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89.1,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      }
+    ],
+    "scenarios": {
+      "withoutTools": {
+        "label": "without-tools",
+        "toolCallingEnabled": false,
+        "summary": {
+          "cases": 12,
+          "actualTokens": 2423,
+          "baselineTokens": 26423,
+          "savedTokens": 24000,
+          "tokensSavedPercent": 90.8,
+          "avgLatencyMs": 5,
+          "avgQualityScore": 98.3,
+          "modelDistribution": {
+            "small": 3,
+            "medium": 3,
+            "large": 6
+          },
+          "actualLlmWorkUnits": 1727,
+          "baselineLlmWorkUnits": 26423,
+          "savedLlmWorkUnits": 24697,
+          "estimatedLlmWorkSavedPercent": 93.5,
+          "tools": {
+            "calls": 0,
+            "errors": 0,
+            "latencyMs": 0,
+            "itemsUsed": 0,
+            "avgLatencyMs": 0
+          }
+        },
+        "results": [
+          {
+            "id": "simple-recipe",
+            "title": "Kuchenrezept",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 4,
+            "actualTokens": 189,
+            "baselineTokens": 2189,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.4,
+            "actualLlmWorkUnits": 48,
+            "baselineLlmWorkUnits": 2189,
+            "savedLlmWorkUnits": 2141,
+            "estimatedLlmWorkSavedPercent": 97.8,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-email",
+            "title": "Kurze Mail",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 1,
+            "actualTokens": 201,
+            "baselineTokens": 2201,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2201,
+            "savedLlmWorkUnits": 2150,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-rewrite",
+            "title": "Umformulierung",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 1,
+            "actualTokens": 198,
+            "baselineTokens": 2198,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2198,
+            "savedLlmWorkUnits": 2148,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-summary",
+            "title": "Zusammenfassung",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 1,
+            "actualTokens": 200,
+            "baselineTokens": 2200,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 111,
+            "baselineLlmWorkUnits": 2200,
+            "savedLlmWorkUnits": 2089,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-technical",
+            "title": "Technische Frage",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 7,
+            "actualTokens": 195,
+            "baselineTokens": 2195,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.1,
+            "actualLlmWorkUnits": 108,
+            "baselineLlmWorkUnits": 2195,
+            "savedLlmWorkUnits": 2087,
+            "estimatedLlmWorkSavedPercent": 95.1,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-compare",
+            "title": "Vergleich",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 7,
+            "actualTokens": 197,
+            "baselineTokens": 2197,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 109,
+            "baselineLlmWorkUnits": 2197,
+            "savedLlmWorkUnits": 2088,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-architecture",
+            "title": "Architektur-Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 6,
+            "actualTokens": 204,
+            "baselineTokens": 2204,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.7,
+            "actualLlmWorkUnits": 205,
+            "baselineLlmWorkUnits": 2204,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-security",
+            "title": "Security Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 8,
+            "actualTokens": 208,
+            "baselineTokens": 2208,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.6,
+            "actualLlmWorkUnits": 209,
+            "baselineLlmWorkUnits": 2208,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-code-analysis",
+            "title": "Codeanalyse",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 8,
+            "actualTokens": 209,
+            "baselineTokens": 2209,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.5,
+            "actualLlmWorkUnits": 210,
+            "baselineLlmWorkUnits": 2209,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-rag",
+            "title": "RAG Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 5,
+            "actualTokens": 208,
+            "baselineTokens": 2208,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.6,
+            "actualLlmWorkUnits": 209,
+            "baselineLlmWorkUnits": 2208,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "tool-stats-review",
+            "title": "Tool: Stats Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "get_stats",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 6,
+            "actualTokens": 208,
+            "baselineTokens": 2208,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.6,
+            "actualLlmWorkUnits": 209,
+            "baselineLlmWorkUnits": 2208,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 90,
+              "rating": "good",
+              "notes": [
+                "expected tool get_stats did not run successfully"
+              ]
+            }
+          },
+          {
+            "id": "tool-knowledge-search",
+            "title": "Tool: Knowledge Search",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "search_knowledge",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 5,
+            "actualTokens": 206,
+            "baselineTokens": 2206,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.7,
+            "actualLlmWorkUnits": 207,
+            "baselineLlmWorkUnits": 2206,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.6,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 90,
+              "rating": "good",
+              "notes": [
+                "expected tool search_knowledge did not run successfully"
+              ]
+            }
+          }
+        ]
+      },
+      "withTools": {
+        "label": "with-tools",
+        "toolCallingEnabled": true,
+        "summary": {
+          "cases": 12,
+          "actualTokens": 2808,
+          "baselineTokens": 26808,
+          "savedTokens": 24000,
+          "tokensSavedPercent": 89.5,
+          "avgLatencyMs": 3,
+          "avgQualityScore": 100,
+          "modelDistribution": {
+            "small": 3,
+            "medium": 3,
+            "large": 6
+          },
+          "actualLlmWorkUnits": 2112,
+          "baselineLlmWorkUnits": 26808,
+          "savedLlmWorkUnits": 24697,
+          "estimatedLlmWorkSavedPercent": 92.1,
+          "tools": {
+            "calls": 5,
+            "errors": 0,
+            "latencyMs": 1,
+            "itemsUsed": 1,
+            "avgLatencyMs": 0
+          }
+        },
+        "results": [
+          {
+            "id": "simple-recipe",
+            "title": "Kuchenrezept",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 4,
+            "actualTokens": 189,
+            "baselineTokens": 2189,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.4,
+            "actualLlmWorkUnits": 48,
+            "baselineLlmWorkUnits": 2189,
+            "savedLlmWorkUnits": 2141,
+            "estimatedLlmWorkSavedPercent": 97.8,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-email",
+            "title": "Kurze Mail",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 1,
+            "actualTokens": 201,
+            "baselineTokens": 2201,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2201,
+            "savedLlmWorkUnits": 2150,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-rewrite",
+            "title": "Umformulierung",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 1,
+            "actualTokens": 198,
+            "baselineTokens": 2198,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2198,
+            "savedLlmWorkUnits": 2148,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-summary",
+            "title": "Zusammenfassung",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 1,
+            "actualTokens": 200,
+            "baselineTokens": 2200,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 111,
+            "baselineLlmWorkUnits": 2200,
+            "savedLlmWorkUnits": 2089,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-technical",
+            "title": "Technische Frage",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 5,
+            "actualTokens": 195,
+            "baselineTokens": 2195,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.1,
+            "actualLlmWorkUnits": 108,
+            "baselineLlmWorkUnits": 2195,
+            "savedLlmWorkUnits": 2087,
+            "estimatedLlmWorkSavedPercent": 95.1,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-compare",
+            "title": "Vergleich",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 5,
+            "actualTokens": 197,
+            "baselineTokens": 2197,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 109,
+            "baselineLlmWorkUnits": 2197,
+            "savedLlmWorkUnits": 2088,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-architecture",
+            "title": "Architektur-Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 242,
+            "baselineTokens": 2242,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89.2,
+            "actualLlmWorkUnits": 243,
+            "baselineLlmWorkUnits": 2242,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89.2,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 1,
+            "toolItemsUsed": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-security",
+            "title": "Security Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 246,
+            "baselineTokens": 2246,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89,
+            "actualLlmWorkUnits": 247,
+            "baselineLlmWorkUnits": 2246,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-code-analysis",
+            "title": "Codeanalyse",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 209,
+            "baselineTokens": 2209,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.5,
+            "actualLlmWorkUnits": 210,
+            "baselineLlmWorkUnits": 2209,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": true,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-rag",
+            "title": "RAG Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 6,
+            "actualTokens": 246,
+            "baselineTokens": 2246,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89,
+            "actualLlmWorkUnits": 247,
+            "baselineLlmWorkUnits": 2246,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "tool-stats-review",
+            "title": "Tool: Stats Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "get_stats",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 4,
+            "actualTokens": 441,
+            "baselineTokens": 2441,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 81.9,
+            "actualLlmWorkUnits": 442,
+            "baselineLlmWorkUnits": 2441,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 81.9,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 1,
+            "toolNames": [
+              "get_stats"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "tool-knowledge-search",
+            "title": "Tool: Knowledge Search",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "search_knowledge",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 5,
+            "actualTokens": 244,
+            "baselineTokens": 2244,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89.1,
+            "actualLlmWorkUnits": 245,
+            "baselineLlmWorkUnits": 2244,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89.1,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "toolComparison": {
+      "withoutTools": {
+        "cases": 12,
+        "actualTokens": 2423,
+        "baselineTokens": 26423,
+        "savedTokens": 24000,
+        "tokensSavedPercent": 90.8,
+        "avgLatencyMs": 5,
+        "avgQualityScore": 98.3,
+        "modelDistribution": {
+          "small": 3,
+          "medium": 3,
+          "large": 6
+        },
+        "actualLlmWorkUnits": 1727,
+        "baselineLlmWorkUnits": 26423,
+        "savedLlmWorkUnits": 24697,
+        "estimatedLlmWorkSavedPercent": 93.5,
+        "tools": {
+          "calls": 0,
+          "errors": 0,
+          "latencyMs": 0,
+          "itemsUsed": 0,
+          "avgLatencyMs": 0
+        }
+      },
+      "withTools": {
+        "cases": 12,
+        "actualTokens": 2808,
+        "baselineTokens": 26808,
+        "savedTokens": 24000,
+        "tokensSavedPercent": 89.5,
+        "avgLatencyMs": 3,
+        "avgQualityScore": 100,
+        "modelDistribution": {
+          "small": 3,
+          "medium": 3,
+          "large": 6
+        },
+        "actualLlmWorkUnits": 2112,
+        "baselineLlmWorkUnits": 26808,
+        "savedLlmWorkUnits": 24697,
+        "estimatedLlmWorkSavedPercent": 92.1,
+        "tools": {
+          "calls": 5,
+          "errors": 0,
+          "latencyMs": 1,
+          "itemsUsed": 1,
+          "avgLatencyMs": 0
+        }
+      },
+      "delta": {
+        "actualTokens": 385,
+        "savedTokens": 0,
+        "avgLatencyMs": -2,
+        "avgQualityScore": 1.7,
+        "toolCalls": 5,
+        "toolLatencyMs": 1,
+        "estimatedLlmWorkSavedPercent": -1.4
+      },
+      "cases": [
+        {
+          "id": "tool-stats-review",
+          "title": "Tool: Stats Review",
+          "expectedTool": "get_stats",
+          "withoutTools": {
+            "actualTokens": 208,
+            "latencyMs": 6,
+            "qualityScore": 90,
+            "toolCalls": 0
+          },
+          "withTools": {
+            "actualTokens": 441,
+            "latencyMs": 4,
+            "qualityScore": 100,
+            "toolCalls": 1,
+            "toolNames": [
+              "get_stats"
+            ]
+          },
+          "delta": {
+            "actualTokens": 233,
+            "latencyMs": -2,
+            "qualityScore": 10,
+            "toolCalls": 1
+          }
+        },
+        {
+          "id": "tool-knowledge-search",
+          "title": "Tool: Knowledge Search",
+          "expectedTool": "search_knowledge",
+          "withoutTools": {
+            "actualTokens": 206,
+            "latencyMs": 5,
+            "qualityScore": 90,
+            "toolCalls": 0
+          },
+          "withTools": {
+            "actualTokens": 244,
+            "latencyMs": 5,
+            "qualityScore": 100,
+            "toolCalls": 1,
+            "toolNames": [
+              "search_knowledge"
+            ]
+          },
+          "delta": {
+            "actualTokens": 38,
+            "latencyMs": 0,
+            "qualityScore": 10,
+            "toolCalls": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "2026-05-03T14-42-32-511Z",
+    "timestamp": "2026-05-03T14:42:32.512Z",
+    "mode": "stub",
+    "summary": {
+      "cases": 12,
+      "actualTokens": 2837,
+      "baselineTokens": 26837,
+      "savedTokens": 24000,
+      "tokensSavedPercent": 89.4,
+      "avgLatencyMs": 3,
+      "avgQualityScore": 100,
+      "modelDistribution": {
+        "small": 3,
+        "medium": 3,
+        "large": 6
+      },
+      "actualLlmWorkUnits": 2141,
+      "baselineLlmWorkUnits": 26837,
+      "savedLlmWorkUnits": 24697,
+      "estimatedLlmWorkSavedPercent": 92,
+      "tools": {
+        "calls": 5,
+        "errors": 0,
+        "latencyMs": 2,
+        "itemsUsed": 1,
+        "avgLatencyMs": 0,
+        "rawTokensEstimated": 219,
+        "injectedTokens": 204,
+        "savedTokens": 15,
+        "reductionPercent": 6.8
+      }
+    },
+    "results": [
+      {
+        "id": "simple-recipe",
+        "title": "Kuchenrezept",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 3,
+        "actualTokens": 189,
+        "baselineTokens": 2189,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91.4,
+        "actualLlmWorkUnits": 48,
+        "baselineLlmWorkUnits": 2189,
+        "savedLlmWorkUnits": 2141,
+        "estimatedLlmWorkSavedPercent": 97.8,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-email",
+        "title": "Kurze Mail",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 2,
+        "actualTokens": 201,
+        "baselineTokens": 2201,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 90.9,
+        "actualLlmWorkUnits": 51,
+        "baselineLlmWorkUnits": 2201,
+        "savedLlmWorkUnits": 2150,
+        "estimatedLlmWorkSavedPercent": 97.7,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "simple-rewrite",
+        "title": "Umformulierung",
+        "expectedModel": "small",
+        "expectedClassification": "simple",
+        "selectedModel": "small",
+        "classification": "simple",
+        "latencyMs": 5,
+        "actualTokens": 198,
+        "baselineTokens": 2198,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91,
+        "actualLlmWorkUnits": 51,
+        "baselineLlmWorkUnits": 2198,
+        "savedLlmWorkUnits": 2148,
+        "estimatedLlmWorkSavedPercent": 97.7,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-summary",
+        "title": "Zusammenfassung",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 5,
+        "actualTokens": 200,
+        "baselineTokens": 2200,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 90.9,
+        "actualLlmWorkUnits": 111,
+        "baselineLlmWorkUnits": 2200,
+        "savedLlmWorkUnits": 2089,
+        "estimatedLlmWorkSavedPercent": 95,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-technical",
+        "title": "Technische Frage",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 5,
+        "actualTokens": 195,
+        "baselineTokens": 2195,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91.1,
+        "actualLlmWorkUnits": 108,
+        "baselineLlmWorkUnits": 2195,
+        "savedLlmWorkUnits": 2087,
+        "estimatedLlmWorkSavedPercent": 95.1,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "medium-compare",
+        "title": "Vergleich",
+        "expectedModel": "medium",
+        "expectedClassification": "medium",
+        "selectedModel": "medium",
+        "classification": "medium",
+        "latencyMs": 4,
+        "actualTokens": 197,
+        "baselineTokens": 2197,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 91,
+        "actualLlmWorkUnits": 109,
+        "baselineLlmWorkUnits": 2197,
+        "savedLlmWorkUnits": 2088,
+        "estimatedLlmWorkSavedPercent": 95,
+        "toolCallingEnabled": false,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-architecture",
+        "title": "Architektur-Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 242,
+        "baselineTokens": 2242,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89.2,
+        "actualLlmWorkUnits": 243,
+        "baselineLlmWorkUnits": 2242,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89.2,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 1,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 1,
+        "toolInjectedTokens": 1,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-security",
+        "title": "Security Review",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 246,
+        "baselineTokens": 2246,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89,
+        "actualLlmWorkUnits": 247,
+        "baselineLlmWorkUnits": 2246,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 1,
+        "toolInjectedTokens": 1,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-code-analysis",
+        "title": "Codeanalyse",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 209,
+        "baselineTokens": 2209,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 90.5,
+        "actualLlmWorkUnits": 210,
+        "baselineLlmWorkUnits": 2209,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 90.5,
+        "toolCallingEnabled": true,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 0,
+        "toolInjectedTokens": 0,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "complex-rag",
+        "title": "RAG Bewertung",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 5,
+        "actualTokens": 246,
+        "baselineTokens": 2246,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89,
+        "actualLlmWorkUnits": 247,
+        "baselineLlmWorkUnits": 2246,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 1,
+        "toolInjectedTokens": 1,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "tool-stats-review",
+        "title": "Tool: Stats Review",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "expectedTool": "get_stats",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 4,
+        "actualTokens": 470,
+        "baselineTokens": 2470,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 81,
+        "actualLlmWorkUnits": 471,
+        "baselineLlmWorkUnits": 2470,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 80.9,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 0,
+        "toolItemsUsed": 1,
+        "toolRawTokensEstimated": 215,
+        "toolInjectedTokens": 200,
+        "toolSavedTokens": 15,
+        "toolReductionPercent": 7,
+        "toolNames": [
+          "get_stats"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      },
+      {
+        "id": "tool-knowledge-search",
+        "title": "Tool: Knowledge Search",
+        "expectedModel": "large",
+        "expectedClassification": "complex",
+        "expectedTool": "search_knowledge",
+        "selectedModel": "large",
+        "classification": "complex",
+        "latencyMs": 1,
+        "actualTokens": 244,
+        "baselineTokens": 2244,
+        "savedTokens": 2000,
+        "tokensSavedPercent": 89.1,
+        "actualLlmWorkUnits": 245,
+        "baselineLlmWorkUnits": 2244,
+        "savedLlmWorkUnits": 1999,
+        "estimatedLlmWorkSavedPercent": 89.1,
+        "toolCallingEnabled": true,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "toolLatencyMs": 1,
+        "toolItemsUsed": 0,
+        "toolRawTokensEstimated": 1,
+        "toolInjectedTokens": 1,
+        "toolSavedTokens": 0,
+        "toolReductionPercent": 0,
+        "toolNames": [
+          "search_knowledge"
+        ],
+        "quality": {
+          "score": 100,
+          "rating": "good",
+          "notes": [
+            "heuristic checks passed; semantic quality still needs human review"
+          ]
+        }
+      }
+    ],
+    "scenarios": {
+      "withoutTools": {
+        "label": "without-tools",
+        "toolCallingEnabled": false,
+        "summary": {
+          "cases": 12,
+          "actualTokens": 2423,
+          "baselineTokens": 26423,
+          "savedTokens": 24000,
+          "tokensSavedPercent": 90.8,
+          "avgLatencyMs": 5,
+          "avgQualityScore": 98.3,
+          "modelDistribution": {
+            "small": 3,
+            "medium": 3,
+            "large": 6
+          },
+          "actualLlmWorkUnits": 1727,
+          "baselineLlmWorkUnits": 26423,
+          "savedLlmWorkUnits": 24697,
+          "estimatedLlmWorkSavedPercent": 93.5,
+          "tools": {
+            "calls": 0,
+            "errors": 0,
+            "latencyMs": 0,
+            "itemsUsed": 0,
+            "avgLatencyMs": 0,
+            "rawTokensEstimated": 0,
+            "injectedTokens": 0,
+            "savedTokens": 0,
+            "reductionPercent": 0
+          }
+        },
+        "results": [
+          {
+            "id": "simple-recipe",
+            "title": "Kuchenrezept",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 3,
+            "actualTokens": 189,
+            "baselineTokens": 2189,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.4,
+            "actualLlmWorkUnits": 48,
+            "baselineLlmWorkUnits": 2189,
+            "savedLlmWorkUnits": 2141,
+            "estimatedLlmWorkSavedPercent": 97.8,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-email",
+            "title": "Kurze Mail",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 1,
+            "actualTokens": 201,
+            "baselineTokens": 2201,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2201,
+            "savedLlmWorkUnits": 2150,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-rewrite",
+            "title": "Umformulierung",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 6,
+            "actualTokens": 198,
+            "baselineTokens": 2198,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2198,
+            "savedLlmWorkUnits": 2148,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-summary",
+            "title": "Zusammenfassung",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 5,
+            "actualTokens": 200,
+            "baselineTokens": 2200,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 111,
+            "baselineLlmWorkUnits": 2200,
+            "savedLlmWorkUnits": 2089,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-technical",
+            "title": "Technische Frage",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 7,
+            "actualTokens": 195,
+            "baselineTokens": 2195,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.1,
+            "actualLlmWorkUnits": 108,
+            "baselineLlmWorkUnits": 2195,
+            "savedLlmWorkUnits": 2087,
+            "estimatedLlmWorkSavedPercent": 95.1,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-compare",
+            "title": "Vergleich",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 7,
+            "actualTokens": 197,
+            "baselineTokens": 2197,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 109,
+            "baselineLlmWorkUnits": 2197,
+            "savedLlmWorkUnits": 2088,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-architecture",
+            "title": "Architektur-Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 5,
+            "actualTokens": 204,
+            "baselineTokens": 2204,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.7,
+            "actualLlmWorkUnits": 205,
+            "baselineLlmWorkUnits": 2204,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-security",
+            "title": "Security Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 8,
+            "actualTokens": 208,
+            "baselineTokens": 2208,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.6,
+            "actualLlmWorkUnits": 209,
+            "baselineLlmWorkUnits": 2208,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-code-analysis",
+            "title": "Codeanalyse",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 6,
+            "actualTokens": 209,
+            "baselineTokens": 2209,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.5,
+            "actualLlmWorkUnits": 210,
+            "baselineLlmWorkUnits": 2209,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-rag",
+            "title": "RAG Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 5,
+            "actualTokens": 208,
+            "baselineTokens": 2208,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.6,
+            "actualLlmWorkUnits": 209,
+            "baselineLlmWorkUnits": 2208,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "tool-stats-review",
+            "title": "Tool: Stats Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "get_stats",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 6,
+            "actualTokens": 208,
+            "baselineTokens": 2208,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.6,
+            "actualLlmWorkUnits": 209,
+            "baselineLlmWorkUnits": 2208,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 90,
+              "rating": "good",
+              "notes": [
+                "expected tool get_stats did not run successfully"
+              ]
+            }
+          },
+          {
+            "id": "tool-knowledge-search",
+            "title": "Tool: Knowledge Search",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "search_knowledge",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 4,
+            "actualTokens": 206,
+            "baselineTokens": 2206,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.7,
+            "actualLlmWorkUnits": 207,
+            "baselineLlmWorkUnits": 2206,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.6,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 90,
+              "rating": "good",
+              "notes": [
+                "expected tool search_knowledge did not run successfully"
+              ]
+            }
+          }
+        ]
+      },
+      "withTools": {
+        "label": "with-tools",
+        "toolCallingEnabled": true,
+        "summary": {
+          "cases": 12,
+          "actualTokens": 2837,
+          "baselineTokens": 26837,
+          "savedTokens": 24000,
+          "tokensSavedPercent": 89.4,
+          "avgLatencyMs": 3,
+          "avgQualityScore": 100,
+          "modelDistribution": {
+            "small": 3,
+            "medium": 3,
+            "large": 6
+          },
+          "actualLlmWorkUnits": 2141,
+          "baselineLlmWorkUnits": 26837,
+          "savedLlmWorkUnits": 24697,
+          "estimatedLlmWorkSavedPercent": 92,
+          "tools": {
+            "calls": 5,
+            "errors": 0,
+            "latencyMs": 2,
+            "itemsUsed": 1,
+            "avgLatencyMs": 0,
+            "rawTokensEstimated": 219,
+            "injectedTokens": 204,
+            "savedTokens": 15,
+            "reductionPercent": 6.8
+          }
+        },
+        "results": [
+          {
+            "id": "simple-recipe",
+            "title": "Kuchenrezept",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 3,
+            "actualTokens": 189,
+            "baselineTokens": 2189,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.4,
+            "actualLlmWorkUnits": 48,
+            "baselineLlmWorkUnits": 2189,
+            "savedLlmWorkUnits": 2141,
+            "estimatedLlmWorkSavedPercent": 97.8,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-email",
+            "title": "Kurze Mail",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 2,
+            "actualTokens": 201,
+            "baselineTokens": 2201,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2201,
+            "savedLlmWorkUnits": 2150,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "simple-rewrite",
+            "title": "Umformulierung",
+            "expectedModel": "small",
+            "expectedClassification": "simple",
+            "selectedModel": "small",
+            "classification": "simple",
+            "latencyMs": 5,
+            "actualTokens": 198,
+            "baselineTokens": 2198,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 51,
+            "baselineLlmWorkUnits": 2198,
+            "savedLlmWorkUnits": 2148,
+            "estimatedLlmWorkSavedPercent": 97.7,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-summary",
+            "title": "Zusammenfassung",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 5,
+            "actualTokens": 200,
+            "baselineTokens": 2200,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.9,
+            "actualLlmWorkUnits": 111,
+            "baselineLlmWorkUnits": 2200,
+            "savedLlmWorkUnits": 2089,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-technical",
+            "title": "Technische Frage",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 5,
+            "actualTokens": 195,
+            "baselineTokens": 2195,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91.1,
+            "actualLlmWorkUnits": 108,
+            "baselineLlmWorkUnits": 2195,
+            "savedLlmWorkUnits": 2087,
+            "estimatedLlmWorkSavedPercent": 95.1,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "medium-compare",
+            "title": "Vergleich",
+            "expectedModel": "medium",
+            "expectedClassification": "medium",
+            "selectedModel": "medium",
+            "classification": "medium",
+            "latencyMs": 4,
+            "actualTokens": 197,
+            "baselineTokens": 2197,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 91,
+            "actualLlmWorkUnits": 109,
+            "baselineLlmWorkUnits": 2197,
+            "savedLlmWorkUnits": 2088,
+            "estimatedLlmWorkSavedPercent": 95,
+            "toolCallingEnabled": false,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-architecture",
+            "title": "Architektur-Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 242,
+            "baselineTokens": 2242,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89.2,
+            "actualLlmWorkUnits": 243,
+            "baselineLlmWorkUnits": 2242,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89.2,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 1,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 1,
+            "toolInjectedTokens": 1,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-security",
+            "title": "Security Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 246,
+            "baselineTokens": 2246,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89,
+            "actualLlmWorkUnits": 247,
+            "baselineLlmWorkUnits": 2246,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 1,
+            "toolInjectedTokens": 1,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-code-analysis",
+            "title": "Codeanalyse",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 209,
+            "baselineTokens": 2209,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 90.5,
+            "actualLlmWorkUnits": 210,
+            "baselineLlmWorkUnits": 2209,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 90.5,
+            "toolCallingEnabled": true,
+            "toolCalls": 0,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "complex-rag",
+            "title": "RAG Bewertung",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 5,
+            "actualTokens": 246,
+            "baselineTokens": 2246,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89,
+            "actualLlmWorkUnits": 247,
+            "baselineLlmWorkUnits": 2246,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 1,
+            "toolInjectedTokens": 1,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "tool-stats-review",
+            "title": "Tool: Stats Review",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "get_stats",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 4,
+            "actualTokens": 470,
+            "baselineTokens": 2470,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 81,
+            "actualLlmWorkUnits": 471,
+            "baselineLlmWorkUnits": 2470,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 80.9,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 0,
+            "toolItemsUsed": 1,
+            "toolRawTokensEstimated": 215,
+            "toolInjectedTokens": 200,
+            "toolSavedTokens": 15,
+            "toolReductionPercent": 7,
+            "toolNames": [
+              "get_stats"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          },
+          {
+            "id": "tool-knowledge-search",
+            "title": "Tool: Knowledge Search",
+            "expectedModel": "large",
+            "expectedClassification": "complex",
+            "expectedTool": "search_knowledge",
+            "selectedModel": "large",
+            "classification": "complex",
+            "latencyMs": 1,
+            "actualTokens": 244,
+            "baselineTokens": 2244,
+            "savedTokens": 2000,
+            "tokensSavedPercent": 89.1,
+            "actualLlmWorkUnits": 245,
+            "baselineLlmWorkUnits": 2244,
+            "savedLlmWorkUnits": 1999,
+            "estimatedLlmWorkSavedPercent": 89.1,
+            "toolCallingEnabled": true,
+            "toolCalls": 1,
+            "toolErrors": 0,
+            "toolLatencyMs": 1,
+            "toolItemsUsed": 0,
+            "toolRawTokensEstimated": 1,
+            "toolInjectedTokens": 1,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "quality": {
+              "score": 100,
+              "rating": "good",
+              "notes": [
+                "heuristic checks passed; semantic quality still needs human review"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "toolComparison": {
+      "withoutTools": {
+        "cases": 12,
+        "actualTokens": 2423,
+        "baselineTokens": 26423,
+        "savedTokens": 24000,
+        "tokensSavedPercent": 90.8,
+        "avgLatencyMs": 5,
+        "avgQualityScore": 98.3,
+        "modelDistribution": {
+          "small": 3,
+          "medium": 3,
+          "large": 6
+        },
+        "actualLlmWorkUnits": 1727,
+        "baselineLlmWorkUnits": 26423,
+        "savedLlmWorkUnits": 24697,
+        "estimatedLlmWorkSavedPercent": 93.5,
+        "tools": {
+          "calls": 0,
+          "errors": 0,
+          "latencyMs": 0,
+          "itemsUsed": 0,
+          "avgLatencyMs": 0,
+          "rawTokensEstimated": 0,
+          "injectedTokens": 0,
+          "savedTokens": 0,
+          "reductionPercent": 0
+        }
+      },
+      "withTools": {
+        "cases": 12,
+        "actualTokens": 2837,
+        "baselineTokens": 26837,
+        "savedTokens": 24000,
+        "tokensSavedPercent": 89.4,
+        "avgLatencyMs": 3,
+        "avgQualityScore": 100,
+        "modelDistribution": {
+          "small": 3,
+          "medium": 3,
+          "large": 6
+        },
+        "actualLlmWorkUnits": 2141,
+        "baselineLlmWorkUnits": 26837,
+        "savedLlmWorkUnits": 24697,
+        "estimatedLlmWorkSavedPercent": 92,
+        "tools": {
+          "calls": 5,
+          "errors": 0,
+          "latencyMs": 2,
+          "itemsUsed": 1,
+          "avgLatencyMs": 0,
+          "rawTokensEstimated": 219,
+          "injectedTokens": 204,
+          "savedTokens": 15,
+          "reductionPercent": 6.8
+        }
+      },
+      "delta": {
+        "actualTokens": 414,
+        "savedTokens": 0,
+        "avgLatencyMs": -2,
+        "avgQualityScore": 1.7,
+        "toolCalls": 5,
+        "toolLatencyMs": 2,
+        "toolRawTokensEstimated": 219,
+        "toolInjectedTokens": 204,
+        "toolSavedTokens": 15,
+        "toolReductionPercent": 6.8,
+        "estimatedLlmWorkSavedPercent": -1.5
+      },
+      "cases": [
+        {
+          "id": "tool-stats-review",
+          "title": "Tool: Stats Review",
+          "expectedTool": "get_stats",
+          "withoutTools": {
+            "actualTokens": 208,
+            "latencyMs": 6,
+            "qualityScore": 90,
+            "toolCalls": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0
+          },
+          "withTools": {
+            "actualTokens": 470,
+            "latencyMs": 4,
+            "qualityScore": 100,
+            "toolCalls": 1,
+            "toolNames": [
+              "get_stats"
+            ],
+            "toolRawTokensEstimated": 215,
+            "toolInjectedTokens": 200,
+            "toolSavedTokens": 15,
+            "toolReductionPercent": 7
+          },
+          "delta": {
+            "actualTokens": 262,
+            "latencyMs": -2,
+            "qualityScore": 10,
+            "toolCalls": 1,
+            "toolRawTokensEstimated": 215,
+            "toolInjectedTokens": 200,
+            "toolSavedTokens": 15
+          }
+        },
+        {
+          "id": "tool-knowledge-search",
+          "title": "Tool: Knowledge Search",
+          "expectedTool": "search_knowledge",
+          "withoutTools": {
+            "actualTokens": 206,
+            "latencyMs": 4,
+            "qualityScore": 90,
+            "toolCalls": 0,
+            "toolRawTokensEstimated": 0,
+            "toolInjectedTokens": 0,
+            "toolSavedTokens": 0
+          },
+          "withTools": {
+            "actualTokens": 244,
+            "latencyMs": 1,
+            "qualityScore": 100,
+            "toolCalls": 1,
+            "toolNames": [
+              "search_knowledge"
+            ],
+            "toolRawTokensEstimated": 1,
+            "toolInjectedTokens": 1,
+            "toolSavedTokens": 0,
+            "toolReductionPercent": 0
+          },
+          "delta": {
+            "actualTokens": 38,
+            "latencyMs": -3,
+            "qualityScore": 10,
+            "toolCalls": 1,
+            "toolRawTokensEstimated": 1,
+            "toolInjectedTokens": 1,
+            "toolSavedTokens": 0
+          }
+        }
+      ]
+    }
+  }
+]

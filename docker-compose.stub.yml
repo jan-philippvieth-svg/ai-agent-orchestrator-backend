@@ -1,0 +1,17 @@
+services:
+  orchestrator:
+    build: .
+    container_name: ai-agent-orchestrator-backend-stub
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      API_KEY: dev-secret
+      STUB_EXTERNAL_SERVICES: "true"
+      CHAT_CACHE_ENABLED: "true"
+      ADMIN_PRIVATE_NETWORKS_ONLY: "true"
+      ADMIN_ALLOWED_IPS: 127.0.0.1,::1
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/app/data

@@ -1,0 +1,41 @@
+services:
+  orchestrator:
+    build: .
+    container_name: ai-agent-orchestrator-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      STUB_EXTERNAL_SERVICES: "false"
+      QDRANT_URL: http://qdrant:6333
+      CHAT_CACHE_ENABLED: "true"
+      ADMIN_PRIVATE_NETWORKS_ONLY: "true"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      qdrant:
+        condition: service_started
+    networks:
+      - internal
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: ai-agent-qdrant
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  qdrant_data:
