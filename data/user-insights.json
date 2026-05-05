@@ -26,48 +26,48 @@
     {
       "tenantId": "tenant-smoke",
       "userId": "user-1",
-      "requests": 39,
-      "avgInputQualityScore": 53.5,
-      "avgAnswerValueScore": 76.6,
-      "avgOverallValueScore": 64.2,
-      "totalSavedTokens": 78000,
-      "avgTokensSavedPercent": 89.3,
-      "avgLatencyMs": 1.4,
+      "requests": 44,
+      "avgInputQualityScore": 53.8,
+      "avgAnswerValueScore": 76.7,
+      "avgOverallValueScore": 64.4,
+      "totalSavedTokens": 88000,
+      "avgTokensSavedPercent": 88.8,
+      "avgLatencyMs": 1.5,
       "retrievalUseRate": 0.5,
       "modelDistribution": {
-        "small": 26,
+        "small": 29,
         "medium": 0,
-        "large": 13
+        "large": 15
       },
       "classificationDistribution": {
-        "simple": 26,
+        "simple": 29,
         "medium": 0,
-        "complex": 13
+        "complex": 15
       },
-      "lastSeenAt": "2026-05-03T14:42:22.194Z"
+      "lastSeenAt": "2026-05-05T11:10:58.849Z"
     },
     {
       "tenantId": "tenant-bff",
       "userId": "browser-user",
-      "requests": 10,
+      "requests": 11,
       "avgInputQualityScore": 35,
       "avgAnswerValueScore": 70,
       "avgOverallValueScore": 51,
-      "totalSavedTokens": 20000,
-      "avgTokensSavedPercent": 92,
+      "totalSavedTokens": 22000,
+      "avgTokensSavedPercent": 91.8,
       "avgLatencyMs": 0.3,
       "retrievalUseRate": 0,
       "modelDistribution": {
-        "small": 10,
+        "small": 11,
         "medium": 0,
         "large": 0
       },
       "classificationDistribution": {
-        "simple": 10,
+        "simple": 11,
         "medium": 0,
         "complex": 0
       },
-      "lastSeenAt": "2026-05-03T14:42:22.160Z"
+      "lastSeenAt": "2026-05-05T11:10:58.818Z"
     }
   ],
   "topInteractions": [
@@ -445,6 +445,33 @@
       "tokensEstimated": 402,
       "savedTokens": 2000,
       "tokensSavedPercent": 83.3,
+      "chunksUsed": 1,
+      "retrievalUsed": true,
+      "processingTimeMs": 0
+    },
+    {
+      "id": "37ab668557e459b82176f8a8206b9c36a1c36a0d5e8998ee64195c5abfe2f085",
+      "timestamp": "2026-05-05T11:10:58.849Z",
+      "tenantId": "tenant-smoke",
+      "userId": "user-1",
+      "messageHash": "b9c91ef6be7acaf75177d5fd41c99b31a6ed8efc33cfaf7c0e0bc54426f99666",
+      "answerHash": "b751e65824b1935e68d0d9bce94ce0f3651ec2564c990a606392e457eb9746ce",
+      "messagePreview": "Bewerte diese Backend-Architektur fuer lokale LLMs und RAG.",
+      "answerPreview": "[stub:large] <context_untrusted> <chunk index=\"1\" source=\"Lokale LLM Backend Architektur Smoke#0\" score=\"0.889\"> Dieses Dokument beschreibt eine API-Schicht fuer lokale LLMs auf ei",
+      "inputQualityScore": 93,
+      "answerValueScore": 90,
+      "overallValueScore": 92,
+      "inputSignals": [
+        "good_length",
+        "clear_task",
+        "domain_specific",
+        "retrieval_matched"
+      ],
+      "selectedModel": "large",
+      "classification": "complex",
+      "tokensEstimated": 436,
+      "savedTokens": 2000,
+      "tokensSavedPercent": 82.1,
       "chunksUsed": 1,
       "retrievalUsed": true,
       "processingTimeMs": 0
@@ -1048,6 +1075,32 @@
       "processingTimeMs": 0
     },
     {
+      "id": "55675dd1e6282b9ab61f5d0c9aaa74320063111071b4fe9eacf7a57ae6796c62",
+      "timestamp": "2026-05-05T11:10:58.844Z",
+      "tenantId": "tenant-smoke",
+      "userId": "user-1",
+      "messageHash": "9304c96c32324017654b047ada987442c2c2233a481a9bedcc069864169092d2",
+      "answerHash": "8d3ee122d08fac5320a684f11e6bdfc64b6440dce1a280bafa6850d771e3ce49",
+      "messagePreview": "Bewerte die Architektur-Metrics, Token-Einsparungen, Cache und Resilience des Systems.",
+      "answerPreview": "[stub:large] <available_tools> <tool name=\"get_stats\"> Description: Reads internal orchestrator metrics: token savings, cache, prompt guard, resilience and tool usage. Use when: Us",
+      "inputQualityScore": 83,
+      "answerValueScore": 90,
+      "overallValueScore": 86,
+      "inputSignals": [
+        "good_length",
+        "clear_task",
+        "domain_specific"
+      ],
+      "selectedModel": "large",
+      "classification": "complex",
+      "tokensEstimated": 601,
+      "savedTokens": 2000,
+      "tokensSavedPercent": 76.9,
+      "chunksUsed": 0,
+      "retrievalUsed": false,
+      "processingTimeMs": 1
+    },
+    {
       "id": "5322694ed970f3dfbf1a106f6f7846fd571f8f90cd2bbaa2055bbe95f4367b77",
       "timestamp": "2026-05-03T14:39:18.933Z",
       "tenantId": "benchmark-tenant",
@@ -1321,55 +1374,6 @@
       "chunksUsed": 0,
       "retrievalUsed": false,
       "processingTimeMs": 0
-    },
-    {
-      "id": "e38d186873fec77166ac70afd08f969b9d750b40ab441ce336bd65a00eb76ed9",
-      "timestamp": "2026-05-03T14:42:32.480Z",
-      "tenantId": "benchmark-tenant",
-      "userId": "benchmark-user",
-      "messageHash": "9fbc105a9626d51e053921d3624c01a0c07f8a5eac00dff413672fdfb283cb2d",
-      "answerHash": "3de2c6630dce369ae0ac992a96e1908fc742181b7acc1c9528653ada66a39ad8",
-      "messagePreview": "Mache eine laengere technische Bewertung der Security-Architektur mit BFF, CSRF, Rate Limiting und Qdrant Auth.",
-      "answerPreview": "[stub:large] <tool_results_untrusted> <tool_result name=\"search_knowledge\" status=\"success\" items_used=\"0\"> [] </tool_result> </tool_results_untrusted> <user_question> Mache eine l",
-      "inputQualityScore": 68,
-      "answerValueScore": 90,
-      "overallValueScore": 78,
-      "inputSignals": [
-        "good_length",
-        "domain_specific"
-      ],
-      "selectedModel": "large",
-      "classification": "complex",
-      "tokensEstimated": 246,
-      "savedTokens": 2000,
-      "tokensSavedPercent": 89,
-      "chunksUsed": 0,
-      "retrievalUsed": false,
-      "processingTimeMs": 1
-    },
-    {
-      "id": "8dc4379de936084f4d9a0691eccb73d0a448e369ad8e78934a7411ce566534ea",
-      "timestamp": "2026-05-03T14:39:18.908Z",
-      "tenantId": "benchmark-tenant",
-      "userId": "benchmark-user",
-      "messageHash": "36d6c9a327c59dfaf0612ce8f4e2115c33b03ca7aa4622114e783fd7bbe8af6f",
-      "answerHash": "b68ffe442185e9b0e8395cf82f3c0ad6c9c8f1dac1fdab2fbd77eb9da886f8f1",
-      "messagePreview": "Gib mir ein einfaches Kuchenrezept.",
-      "answerPreview": "[stub:small] <user_question> Gib mir ein einfaches Kuchenrezept. </user_question>",
-      "inputQualityScore": 53,
-      "answerValueScore": 90,
-      "overallValueScore": 70,
-      "inputSignals": [
-        "good_length"
-      ],
-      "selectedModel": "small",
-      "classification": "simple",
-      "tokensEstimated": 189,
-      "savedTokens": 2000,
-      "tokensSavedPercent": 91.4,
-      "chunksUsed": 0,
-      "retrievalUsed": false,
-      "processingTimeMs": 4
     }
   ]
 }

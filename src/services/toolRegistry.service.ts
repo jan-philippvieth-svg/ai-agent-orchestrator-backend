@@ -1,15 +1,9 @@
 import { config } from '../config.js';
-import type { ChatRequest, Classification, ModelSize, SearchRequest, ToolCallResult } from '../types/index.js';
+import type { ChatRequest, SearchRequest, ToolCallResult, ToolName } from '../types/index.js';
 import { EmbeddingService } from './embedding.service.js';
 import { MetricsService } from './metrics.service.js';
 import { QdrantService } from './qdrant.service.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
-
-interface ToolContext {
-  request: ChatRequest;
-  classification: Classification;
-  selectedModel: ModelSize;
-}
 
 export class ToolRegistryService {
   constructor(
@@ -18,15 +12,13 @@ export class ToolRegistryService {
     private readonly metrics = MetricsService.getInstance(),
   ) {}
 
-  async executeForChat(context: ToolContext): Promise<ToolCallResult[]> {
-    if (!config.tools.enabled || context.selectedModel !== 'large') return [];
+  async executeForChat(request: ChatRequest, selectedTools: ToolName[]): Promise<ToolCallResult[]> {
+    if (!config.tools.enabled || selectedTools.length === 0) return [];
 
-    const plannedTools = this.planTools(context);
     const results: ToolCallResult[] = [];
 
-    for (const toolName of plannedTools) {
-      const result =
-        toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(context.request);
+    for (const toolName of selectedTools) {
+      const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(request);
       this.metrics.recordTool({
         name: result.name,
         status: result.status,
@@ -40,24 +32,6 @@ export class ToolRegistryService {
     }
 
     return results;
-  }
-
-  private planTools(context: ToolContext): Array<'get_stats' | 'search_knowledge'> {
-    const message = context.request.message;
-    const tools: Array<'get_stats' | 'search_knowledge'> = [];
-
-    if (/\b(stats|metrics|metriken|einspar|tokens|fallback|cache|guard|resilience|dashboard)\b/i.test(message)) {
-      tools.push('get_stats');
-    }
-
-    if (
-      !context.request.useRetrieval &&
-      /\b(suche|finde|wissensbasis|knowledge|qdrant|rag|dokument|quelle|kontext|retrieval)\b/i.test(message)
-    ) {
-      tools.push('search_knowledge');
-    }
-
-    return tools;
   }
 
   private async getStats(): Promise<ToolCallResult> {

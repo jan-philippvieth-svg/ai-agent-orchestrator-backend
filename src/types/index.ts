@@ -37,6 +37,7 @@ export interface ChatResponse {
     };
     tools: {
       enabled: boolean;
+      selected: ToolSelection[];
       calls: ToolCallMetadata[];
     };
     guard: PromptGuardMetadata;
@@ -127,6 +128,17 @@ export interface QualityGateResult {
 }
 
 export type ToolCallStatus = 'success' | 'skipped' | 'error';
+export type ToolName = 'get_stats' | 'search_knowledge';
+
+export interface ToolDefinition {
+  name: ToolName;
+  description: string;
+  useWhen: string;
+}
+
+export interface ToolSelection extends ToolDefinition {
+  reason: string;
+}
 
 export interface ToolCallResult {
   name: string;

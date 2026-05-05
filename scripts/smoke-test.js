@@ -129,6 +129,7 @@ async function run() {
   assert(simpleChat.body.metadata.guard.blocked === false, 'Expected prompt guard to allow harmless prompt');
   assert(simpleChat.body.metadata.cache.hit === false, 'Expected first simple chat to miss cache');
   assert(simpleChat.body.metadata.cache.eligible === true, 'Expected simple chat to be cache eligible');
+  assert(simpleChat.body.metadata.tools.selected.length === 0, 'Expected simple chat to have no selected tools');
   assert(simpleChat.body.metadata.tools.calls.length === 0, 'Expected simple chat to skip large-mode tools');
   assert(
     typeof simpleChat.body.metadata.efficiency.estimatedLlmWorkSavedPercent === 'number',
@@ -280,6 +281,11 @@ async function run() {
   assert(toolStatsChat.status === 200, 'Expected tool stats chat to succeed');
   assert(toolStatsChat.body.metadata.selectedModel === 'large', 'Expected tool stats chat to use large model');
   assert(toolStatsChat.body.metadata.tools.enabled === true, 'Expected large-mode tools to be enabled');
+  assert(
+    toolStatsChat.body.metadata.tools.selected.length === 1 &&
+      toolStatsChat.body.metadata.tools.selected[0].name === 'get_stats',
+    'Expected tool router to select only get_stats for metrics prompt',
+  );
   assert(
     toolStatsChat.body.metadata.tools.calls.some((call) => call.name === 'get_stats' && call.status === 'success'),
     'Expected get_stats tool to run successfully',

@@ -13,6 +13,7 @@ import { PromptBuilderService } from './promptBuilder.service.js';
 import { PromptGuardService } from './promptGuard.service.js';
 import { QdrantService } from './qdrant.service.js';
 import { ToolRegistryService } from './toolRegistry.service.js';
+import { ToolRouterService } from './toolRouter.service.js';
 import { UserInsightService } from './userInsight.service.js';
 
 interface ChatOrchestratorOptions {
@@ -36,6 +37,7 @@ export class ChatOrchestratorService {
     private readonly promptGuard = new PromptGuardService(),
     private readonly cache = CacheService.getInstance(),
     private readonly tools = new ToolRegistryService(),
+    private readonly toolRouter = new ToolRouterService(),
   ) {}
 
   async run(body: ChatRequest, options: ChatOrchestratorOptions = {}): Promise<ChatResponse> {
@@ -94,6 +96,7 @@ export class ChatOrchestratorService {
           },
           tools: {
             enabled: false,
+            selected: [],
             calls: [],
           },
           efficiency: {
@@ -218,15 +221,19 @@ export class ChatOrchestratorService {
       }
     }
 
-    const toolResults = await this.tools.executeForChat({
+    const toolRouting = this.toolRouter.route({
       request: guardedBody,
       classification,
       selectedModel,
     });
+    const toolResults = await this.tools.executeForChat(
+      guardedBody,
+      toolRouting.selected.map((tool) => tool.name),
+    );
     const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
     warnings.push(...toolWarnings);
 
-    const prompt = this.prompts.build(guardedBody.message, chunks, toolResults);
+    const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected);
     const completion = await this.llm.complete({
       modelSize: selectedModel,
       messages: [
@@ -291,7 +298,8 @@ export class ChatOrchestratorService {
           eligible: cacheEligible,
         },
         tools: {
-          enabled: config.tools.enabled && selectedModel === 'large',
+          enabled: toolRouting.enabled,
+          selected: toolRouting.selected,
           calls: toolResults.map((result) => ({
             name: result.name,
             status: result.status,

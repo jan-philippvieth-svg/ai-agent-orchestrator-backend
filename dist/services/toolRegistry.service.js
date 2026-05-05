@@ -12,13 +12,12 @@ export class ToolRegistryService {
         this.qdrant = qdrant;
         this.metrics = metrics;
     }
-    async executeForChat(context) {
-        if (!config.tools.enabled || context.selectedModel !== 'large')
+    async executeForChat(request, selectedTools) {
+        if (!config.tools.enabled || selectedTools.length === 0)
             return [];
-        const plannedTools = this.planTools(context);
         const results = [];
-        for (const toolName of plannedTools) {
-            const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(context.request);
+        for (const toolName of selectedTools) {
+            const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(request);
             this.metrics.recordTool({
                 name: result.name,
                 status: result.status,
@@ -31,18 +30,6 @@ export class ToolRegistryService {
             results.push(result);
         }
         return results;
-    }
-    planTools(context) {
-        const message = context.request.message;
-        const tools = [];
-        if (/\b(stats|metrics|metriken|einspar|tokens|fallback|cache|guard|resilience|dashboard)\b/i.test(message)) {
-            tools.push('get_stats');
-        }
-        if (!context.request.useRetrieval &&
-            /\b(suche|finde|wissensbasis|knowledge|qdrant|rag|dokument|quelle|kontext|retrieval)\b/i.test(message)) {
-            tools.push('search_knowledge');
-        }
-        return tools;
     }
     async getStats() {
         const start = Date.now();

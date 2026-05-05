@@ -12,6 +12,7 @@ import { PromptBuilderService } from './promptBuilder.service.js';
 import { PromptGuardService } from './promptGuard.service.js';
 import { QdrantService } from './qdrant.service.js';
 import { ToolRegistryService } from './toolRegistry.service.js';
+import { ToolRouterService } from './toolRouter.service.js';
 import { UserInsightService } from './userInsight.service.js';
 export class ChatOrchestratorService {
     classifier;
@@ -27,7 +28,8 @@ export class ChatOrchestratorService {
     promptGuard;
     cache;
     tools;
-    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), embeddings = new EmbeddingService(), qdrant = new QdrantService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService()) {
+    toolRouter;
+    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), embeddings = new EmbeddingService(), qdrant = new QdrantService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService()) {
         this.classifier = classifier;
         this.router = router;
         this.embeddings = embeddings;
@@ -41,6 +43,7 @@ export class ChatOrchestratorService {
         this.promptGuard = promptGuard;
         this.cache = cache;
         this.tools = tools;
+        this.toolRouter = toolRouter;
     }
     async run(body, options = {}) {
         const start = Date.now();
@@ -94,6 +97,7 @@ export class ChatOrchestratorService {
                     },
                     tools: {
                         enabled: false,
+                        selected: [],
                         calls: [],
                     },
                     efficiency: {
@@ -208,14 +212,15 @@ export class ChatOrchestratorService {
                 });
             }
         }
-        const toolResults = await this.tools.executeForChat({
+        const toolRouting = this.toolRouter.route({
             request: guardedBody,
             classification,
             selectedModel,
         });
+        const toolResults = await this.tools.executeForChat(guardedBody, toolRouting.selected.map((tool) => tool.name));
         const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
         warnings.push(...toolWarnings);
-        const prompt = this.prompts.build(guardedBody.message, chunks, toolResults);
+        const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected);
         const completion = await this.llm.complete({
             modelSize: selectedModel,
             messages: [
@@ -277,7 +282,8 @@ export class ChatOrchestratorService {
                     eligible: cacheEligible,
                 },
                 tools: {
-                    enabled: config.tools.enabled && selectedModel === 'large',
+                    enabled: toolRouting.enabled,
+                    selected: toolRouting.selected,
                     calls: toolResults.map((result) => ({
                         name: result.name,
                         status: result.status,

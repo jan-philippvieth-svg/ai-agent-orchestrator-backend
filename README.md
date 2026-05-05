@@ -585,7 +585,16 @@ ai_agent_orchestrator_chat_cache_hit_rate_percent
 
 ## Lightweight Tool-Calling
 
-Der Prototyp unterstuetzt jetzt kontrollierte interne Tools. Das ist bewusst kein freier Agent-Loop, sondern eine kleine serverseitige Tool Registry.
+Der Prototyp unterstützt kontrollierte interne Tools. Das ist bewusst kein freier Agent-Loop, sondern eine kleine serverseitige Tool Registry mit vorgeschaltetem Tool-Router.
+
+```text
+Request
+-> Backend
+-> Tool-Router analysiert Task und Prompt
+-> nur relevante Tool-Definitionen
+-> optionale Tool-Ausführung
+-> LLM mit individueller Tool-Liste
+```
 
 Tool-Calling ist aktuell nur aktiv, wenn:
 
@@ -598,7 +607,18 @@ Aktuelle Tools:
 - `get_stats`: liefert interne Metriken zu Tokens, Cache, Guard, Resilience und Tool-Nutzung
 - `search_knowledge`: führt eine tenant-gefilterte Knowledge-Suche über Embedding + Qdrant aus
 
-Tool-Ergebnisse werden im Prompt strikt als nicht vertrauenswuerdig markiert:
+Der Tool-Router sendet nicht den kompletten Werkzeugkasten an das LLM, sondern nur die pro Anfrage ausgewählten Tool-Definitionen:
+
+```text
+<available_tools>
+  <tool name="get_stats">
+    Description: Reads internal orchestrator metrics...
+    Selected because: Prompt asks about metrics and token savings.
+  </tool>
+</available_tools>
+```
+
+Tool-Ergebnisse werden zusätzlich im Prompt strikt als nicht vertrauenswürdig markiert:
 
 ```text
 <tool_results_untrusted>
@@ -614,6 +634,14 @@ Chat-Metadata:
 {
   "tools": {
     "enabled": true,
+    "selected": [
+      {
+        "name": "get_stats",
+        "description": "Reads internal orchestrator metrics...",
+        "useWhen": "Use for questions about metrics...",
+        "reason": "Prompt asks about system metrics, performance or token savings."
+      }
+    ],
     "calls": [
       {
         "name": "get_stats",
