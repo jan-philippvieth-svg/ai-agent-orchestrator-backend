@@ -240,7 +240,7 @@ export class BenchmarkRunner {
         cases: new Set(results.map((result) => result.caseId)).size,
         scenarios: scenarioSummary.length,
         bestScenario: best?.scenario ?? 'baseline',
-        enterpriseReady: (best?.avgQualityScore ?? 0) >= 75 && failures === 0,
+        enterpriseReady: !config.stubExternalServices && (best?.avgQualityScore ?? 0) >= 75 && failures === 0,
         avgLatencyMs: Math.round(this.average(results.map((item) => item.totalLatencyMs))),
         avgQualityScore: Math.round(this.average(results.map((item) => item.evaluation.answerQualityScore)) * 10) / 10,
         avgContextReductionPercent: Math.round(this.average(results.map((item) => item.contextReductionPercent)) * 10) / 10,

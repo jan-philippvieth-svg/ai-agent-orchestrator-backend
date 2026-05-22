@@ -1,12 +1,12 @@
 {
-  "id": "2026-05-22T22-20-57-072Z",
-  "timestamp": "2026-05-22T22:20:57.073Z",
+  "id": "2026-05-22T22-47-55-052Z",
+  "timestamp": "2026-05-22T22:47:55.053Z",
   "mode": "stub",
   "summary": {
     "cases": 3,
     "scenarios": 3,
     "bestScenario": "optimized",
-    "enterpriseReady": true,
+    "enterpriseReady": false,
     "avgLatencyMs": 1,
     "avgQualityScore": 63.7,
     "avgContextReductionPercent": 0,
@@ -49,7 +49,7 @@
     },
     {
       "scenario": "rag",
-      "avgLatencyMs": 1,
+      "avgLatencyMs": 0,
       "avgQualityScore": 65.7,
       "avgContextReductionPercent": 0,
       "failureRate": 0,
@@ -81,7 +81,7 @@
         "retrievalMs": 0,
         "contextPreparationMs": 0,
         "toolSelectionMs": 0,
-        "llmMs": 0
+        "llmMs": 1
       },
       "promptTokensEstimated": 217,
       "completionTokensEstimated": 30,
@@ -113,11 +113,11 @@
       "success": true,
       "modelName": "local-13b",
       "modelSize": "medium",
-      "totalLatencyMs": 2,
+      "totalLatencyMs": 1,
       "stepLatencies": {
         "classificationMs": 0,
         "qualityGateMs": 0,
-        "retrievalMs": 2,
+        "retrievalMs": 1,
         "contextPreparationMs": 0,
         "toolSelectionMs": 0,
         "llmMs": 0
@@ -156,7 +156,7 @@
       "totalLatencyMs": 2,
       "stepLatencies": {
         "classificationMs": 0,
-        "qualityGateMs": 1,
+        "qualityGateMs": 2,
         "retrievalMs": 0,
         "contextPreparationMs": 0,
         "toolSelectionMs": 0,
@@ -391,9 +391,9 @@
       "classification": "simple",
       "totalLatencyMs": 1,
       "stepLatencies": {
-        "classificationMs": 1,
+        "classificationMs": 0,
         "qualityGateMs": 0,
-        "retrievalMs": 0,
+        "retrievalMs": 1,
         "contextPreparationMs": 0,
         "toolSelectionMs": 0,
         "llmMs": 0

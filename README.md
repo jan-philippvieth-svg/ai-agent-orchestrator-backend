@@ -336,6 +336,8 @@ BENCHMARK_RAG_MODEL=medium
 
 Der Markdown-Report ist bewusst consulting-tauglich aufgebaut: Management Summary, Executive KPIs, technische Details, Compliance-/Betriebsbewertung und konkrete Handlungsempfehlung.
 
+Wenn `STUB_EXTERNAL_SERVICES=true` gesetzt ist, wird der Report explizit als Stub-Ergebnis markiert. Das ist eine technische Funktionsprüfung der Pipeline und keine produktiv belastbare Enterprise-Bewertung mit echten Chunks, echten Retrieval-Scores und echten LLM-Latenzen.
+
 Ältere Benchmark-Historien können zusätzlich noch `toolComparison` enthalten mit:
 
 - Tokens ohne/mit Tools

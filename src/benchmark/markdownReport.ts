@@ -3,20 +3,30 @@ import type { BenchmarkRunReport } from './benchmarkTypes.js';
 export function renderBenchmarkMarkdown(report: BenchmarkRunReport): string {
   const best = report.scenarioSummary.find((item) => item.scenario === report.summary.bestScenario);
   const bottleneck = [...report.scenarioSummary].sort((a, b) => b.avgLatencyMs - a.avgLatencyMs)[0];
+  const isStub = report.mode === 'stub';
+  const enterpriseStatus = isStub
+    ? 'Nein. Stub-Ergebnis: technische Funktionsprüfung, nicht produktiv belastbar.'
+    : report.summary.enterpriseReady
+      ? 'Ja, für den aktuellen Benchmark-Scope.'
+      : 'Noch nicht belastbar genug.';
+  const summaryNote = isStub
+    ? 'Dieser Lauf nutzt Stub-Services. Die Zahlen zeigen, ob Pipeline, Reports und Heuristiken funktionieren; sie ersetzen keine Bewertung mit echter Qdrant-Collection, echten LLM-Endpunkten und realen Chunks.'
+    : 'Die optimierte Variante ist in der Regel die beste Enterprise-Kandidatin, wenn Qualität, Nachvollziehbarkeit, Tenant-Isolation und Betriebsmetriken wichtiger sind als minimaler Prompt-Overhead.';
 
   return `# AI Benchmark Report
 
 Generated: ${report.timestamp}
+Mode: ${report.mode}
 
 ## 1. Management Summary
 
-- Enterprise-tauglich: ${report.summary.enterpriseReady ? 'Ja, für den aktuellen Benchmark-Scope.' : 'Noch nicht belastbar genug.'}
+- Enterprise-tauglich: ${enterpriseStatus}
 - Empfohlene Variante: ${best?.scenario ?? 'n/a'} (${best?.recommendation ?? 'keine Empfehlung'})
 - Wichtigster Engpass: ${bottleneck?.scenario ?? 'n/a'} mit Ø ${bottleneck?.avgLatencyMs ?? 0}ms Latenz
 - Gesamtqualität: ${report.summary.avgQualityScore}/100
 - Fehlerquote: ${report.summary.failureRate}%
 
-Kurzbewertung: Die optimierte Variante ist in der Regel die beste Enterprise-Kandidatin, wenn Qualität, Nachvollziehbarkeit, Tenant-Isolation und Betriebsmetriken wichtiger sind als minimaler Prompt-Overhead.
+Kurzbewertung: ${summaryNote}
 
 ## 2. Executive KPIs
 
