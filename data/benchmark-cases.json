@@ -1,0 +1,36 @@
+[
+  {
+    "id": "simple-policy-question",
+    "title": "Einfache Wissensfrage",
+    "tenantId": "benchmark-tenant",
+    "userId": "benchmark-user",
+    "message": "Erkläre kurz, warum ein API-Orchestrator lokale LLMs effizienter macht.",
+    "useRetrieval": false,
+    "preferredModel": "auto",
+    "expectedKeywords": ["Orchestrator", "LLM", "effizient"]
+  },
+  {
+    "id": "rag-architecture-review",
+    "title": "RAG Architekturreview",
+    "tenantId": "benchmark-tenant",
+    "userId": "benchmark-user",
+    "message": "Bewerte die Architektur mit Qdrant, RAG, Context Reduction und Tenant-Isolation.",
+    "useRetrieval": true,
+    "preferredModel": "auto",
+    "metadata": {
+      "projectId": "agent-orchestrator",
+      "sourceType": "markdown"
+    },
+    "expectedKeywords": ["Qdrant", "RAG", "Tenant"]
+  },
+  {
+    "id": "tool-metrics-enterprise",
+    "title": "Toolgestützte Betriebsbewertung",
+    "tenantId": "benchmark-tenant",
+    "userId": "benchmark-user",
+    "message": "Bewerte die Performance-Metrics, Token-Einsparungen, Cache, Guard, ToolRouter und Resilience aus Enterprise-Sicht.",
+    "useRetrieval": false,
+    "preferredModel": "auto",
+    "expectedKeywords": ["Performance", "Token", "Enterprise"]
+  }
+]

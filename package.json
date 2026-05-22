@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "test": "npm run build && node scripts/smoke-test.js",
     "smoke": "npm run build && node scripts/smoke-test.js",
-    "benchmark": "npm run build && node scripts/benchmark-report.js"
+    "benchmark": "npm run build && node dist/benchmark/benchmarkCli.js"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",

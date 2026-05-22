@@ -311,16 +311,32 @@ Benchmark-Bericht:
 npm.cmd run benchmark
 ```
 
-Der Benchmark führt typische Beispielanfragen aus und speichert historische Reports unter `data/benchmark-history.json`.
+Der TypeScript-Benchmark liest typische Beispielanfragen aus `data/benchmark-cases.json` und vergleicht drei Betriebsarten:
 
-Seit der Tool-Calling-Erweiterung läuft der Benchmark als A/B-Vergleich:
+- `baseline`: Prompt direkt an ein kleines LLM, ohne Retrieval und ohne Tool-Router
+- `rag`: Retrieval, Kontextreduktion und LLM-Aufruf
+- `optimized`: Klassifikation, Guard/Quality-Prüfung, Retrieval, Tool-Router und LLM-Aufruf
+
+Die Ergebnisse werden reproduzierbar gespeichert:
 
 ```text
-Szenario A: TOOL_CALLING_ENABLED=false
-Szenario B: TOOL_CALLING_ENABLED=true
+data/benchmark-results/latest.json
+data/benchmark-history.json
+reports/benchmark-report.md
 ```
 
-Der Report enthält zusätzlich `toolComparison` mit:
+Konfiguration über `.env`:
+
+```env
+BENCHMARK_TIMEOUT_MS=30000
+BENCHMARK_PRICE_INPUT_PER_1K=0
+BENCHMARK_PRICE_OUTPUT_PER_1K=0
+BENCHMARK_RAG_MODEL=medium
+```
+
+Der Markdown-Report ist bewusst consulting-tauglich aufgebaut: Management Summary, Executive KPIs, technische Details, Compliance-/Betriebsbewertung und konkrete Handlungsempfehlung.
+
+Ältere Benchmark-Historien können zusätzlich noch `toolComparison` enthalten mit:
 
 - Tokens ohne/mit Tools
 - Latenz ohne/mit Tools
@@ -883,6 +899,14 @@ Benchmark ausführen:
 ```bash
 npm.cmd run benchmark
 ```
+
+Der CLI-Benchmark läuft ohne gestarteten API-Server, baut vorher TypeScript und nutzt die Service-Schicht direkt. Er liest `data/benchmark-cases.json`, respektiert `STUB_EXTERNAL_SERVICES=true` und schreibt:
+
+- `data/benchmark-results/latest.json` als vollständigen JSON-Report
+- `data/benchmark-history.json` als historische Zeitreihe
+- `reports/benchmark-report.md` als Management-/Consulting-Report
+
+Verglichen werden `baseline`, `rag` und `optimized`. Erfasst werden Gesamtlatenz, Schritt-Latenzen, Token-Schätzung, Kontextreduktion, Retrieval-Scores, Modellwahl, Fehler/Timeouts, heuristische Qualität und optionale Kostenabschätzung.
 
 Benchmark-Historie abrufen:
 

@@ -103,6 +103,12 @@ export const config = {
     enabled: readBoolean('TOOL_CALLING_ENABLED', true),
     searchLimit: readNumber('TOOL_SEARCH_LIMIT', 3),
   },
+  benchmark: {
+    timeoutMs: readNumber('BENCHMARK_TIMEOUT_MS', 30_000),
+    priceInputPer1k: readNumber('BENCHMARK_PRICE_INPUT_PER_1K', 0),
+    priceOutputPer1k: readNumber('BENCHMARK_PRICE_OUTPUT_PER_1K', 0),
+    ragModel: (process.env.BENCHMARK_RAG_MODEL ?? 'medium') as 'small' | 'medium' | 'large',
+  },
 };
 
 export type AppConfig = typeof config;
