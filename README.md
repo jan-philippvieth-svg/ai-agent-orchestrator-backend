@@ -880,8 +880,14 @@ docker compose -f docker-compose.stub.yml down
 Produktivtest mit Qdrant:
 
 ```bash
-cp .env.example .env
+cp deploy/env.vps.example .env
 docker compose up --build
+```
+
+Interne UI:
+
+```text
+http://localhost:3001/ui
 ```
 
 ## Docker Compose und Tailscale-Readiness
@@ -902,7 +908,7 @@ curl -s http://localhost:3001/health \
 Für einen Produktivtest mit Qdrant:
 
 ```bash
-cp .env.example .env
+cp deploy/env.vps.example .env
 docker compose up --build
 ```
 
@@ -910,9 +916,82 @@ Das Compose-Setup startet:
 
 - `orchestrator` auf Port `3001`
 - `qdrant` auf `127.0.0.1:6333`
-- persistente Volumes für `./data` und Qdrant-Storage
+- persistente Volumes für `./data`, `./reports` und Qdrant-Storage
+- einen Container-Healthcheck für den Orchestrator
 
 Qdrant wird absichtlich nur an `127.0.0.1` gebunden, damit kein Browser oder anderes Gerät direkt auf die Vektordatenbank zugreifen muss.
+
+### VPS Deployment
+
+Für Strato/Ubuntu gibt es ein eigenes Runbook:
+
+```text
+deploy/STRATO_UBUNTU.md
+```
+
+Minimaler Ablauf auf einem frischen Server:
+
+```bash
+git clone https://github.com/jan-philippvieth-svg/ai-agent-orchestrator-backend.git
+cd ai-agent-orchestrator-backend
+cp deploy/env.vps.example .env
+nano .env
+mkdir -p data reports
+docker compose up -d --build
+docker compose ps
+curl -s http://localhost:3001/health -H "x-api-key: <API_KEY_AUS_ENV>"
+```
+
+Wichtige `.env`-Werte vor dem Start ersetzen:
+
+- `API_KEY`
+- `BFF_DEV_LOGIN_KEY`
+- `BFF_SESSION_SECRET`, z. B. `openssl rand -hex 32`
+- `QDRANT_API_KEY`, wenn Qdrant Auth aktiv sein soll
+- `LLM_*_URL` und `EMBEDDING_URL`
+- `CORS_ALLOWED_ORIGINS`
+
+Port-Bindings:
+
+```env
+ORCHESTRATOR_BIND=127.0.0.1
+```
+
+Damit ist die API nur lokal auf dem VPS erreichbar und kann sauber hinter Nginx, Caddy oder Tailscale Funnel/Serve gelegt werden. Für reine interne VPN-Nutzung kann alternativ eine Tailscale-IP oder `0.0.0.0` gesetzt werden.
+
+Wenn LLMs oder Embeddings auf dem Host selbst laufen, kann der Container sie über `host.docker.internal` erreichen. Das Compose-File setzt dafür `host-gateway`.
+
+Beispiele:
+
+```env
+LLM_SMALL_URL=http://host.docker.internal:1234/v1/chat/completions
+EMBEDDING_URL=http://host.docker.internal:11434/api/embeddings
+```
+
+Updates:
+
+```bash
+git pull
+docker compose up -d --build
+docker compose logs -f orchestrator
+```
+
+Empfohlener Strato-Start mit Caddy/HTTPS:
+
+```bash
+cp deploy/env.vps.example .env
+nano .env
+docker compose -f docker-compose.strato.yml up -d --build
+```
+
+Dabei bleiben Orchestrator und Qdrant im Docker-Netz. Öffentlich sind nur `80` und `443` über Caddy. `APP_DOMAIN` in `.env` muss auf deine Domain zeigen.
+
+Backup-Hinweise:
+
+- Qdrant liegt im Docker-Volume `qdrant_data`
+- Runtime-JSON, Benchmark-History und Payload-Store liegen unter `./data`
+- Benchmark-Reports liegen unter `./reports`
+- `data/privacy-payloads.json` enthält potenziell personenbezogene Daten und wird nicht ins Git-Repo committed
 
 ### Tailscale / VPN
 

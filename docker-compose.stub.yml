@@ -15,3 +15,16 @@ services:
       - "3001:3001"
     volumes:
       - ./data:/app/data
+      - ./reports:/app/reports
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const port=process.env.PORT||3001; const key=process.env.API_KEY||'dev-secret'; fetch(`http://127.0.0.1:${port}/health`,{headers:{'x-api-key':key}}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1));"
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3

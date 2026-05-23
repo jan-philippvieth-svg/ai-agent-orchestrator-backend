@@ -12,8 +12,6 @@ services:
       QDRANT_URL: http://qdrant:6333
       CHAT_CACHE_ENABLED: "true"
       ADMIN_PRIVATE_NETWORKS_ONLY: "true"
-    ports:
-      - "${ORCHESTRATOR_BIND:-127.0.0.1}:3001:3001"
     volumes:
       - ./data:/app/data
       - ./reports:/app/reports
@@ -43,10 +41,27 @@ services:
     restart: unless-stopped
     environment:
       QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:-}
-    ports:
-      - "127.0.0.1:6333:6333"
     volumes:
       - qdrant_data:/qdrant/storage
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: ai-agent-caddy
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      orchestrator:
+        condition: service_started
     networks:
       - internal
 
@@ -56,3 +71,5 @@ networks:
 
 volumes:
   qdrant_data:
+  caddy_data:
+  caddy_config:
