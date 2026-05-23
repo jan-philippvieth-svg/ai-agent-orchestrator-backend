@@ -44,8 +44,16 @@ export class IngestionQualityService {
             };
         }
         const containsPotentialPii = piiPatterns.some((pattern) => pattern.test(cleanedContent));
-        if (containsPotentialPii) {
-            warnings.push('Potential PII detected; content is accepted with metadata warning.');
+        if (containsPotentialPii || input.privacy?.containsPersonalData) {
+            return {
+                accepted: false,
+                reason: 'Content rejected by ingestion quality gate: personal data must be stored as external payload references',
+                warnings: [
+                    'Potential PII detected in RAG content.',
+                    'Store personal data in the payload store and reference it via privacy.payloadRefs instead.',
+                ],
+                metadataUpdates: { containsPersonalData: true },
+            };
         }
         if (input.status !== 'approved') {
             warnings.push('Content is not approved; chunks will not be eligible for retrieval by default.');
@@ -59,7 +67,12 @@ export class IngestionQualityService {
             metadataUpdates: {
                 documentHash: contentHash,
                 approvedForRetrieval: input.status === 'approved',
-                containsPotentialPii,
+                containsPotentialPii: false,
+                containsPersonalData: false,
+                payloadRefs: input.privacy?.payloadRefs ?? [],
+                privacyClass: input.privacy?.privacyClass ?? 'internal',
+                retentionPolicy: 'knowledge_base',
+                deletionBehavior: input.privacy?.deletionBehavior ?? 'keep_if_pii_free',
             },
         };
     }

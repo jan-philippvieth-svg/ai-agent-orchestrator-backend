@@ -62,6 +62,13 @@ export class IngestionService {
                 documentHash,
                 createdAt: new Date().toISOString(),
                 approvedForRetrieval: Boolean(quality.metadataUpdates.approvedForRetrieval),
+                containsPersonalData: Boolean(quality.metadataUpdates.containsPersonalData),
+                payloadRefs: Array.isArray(quality.metadataUpdates.payloadRefs)
+                    ? quality.metadataUpdates.payloadRefs
+                    : [],
+                privacyClass: String(quality.metadataUpdates.privacyClass ?? 'internal'),
+                retentionPolicy: String(quality.metadataUpdates.retentionPolicy ?? 'knowledge_base'),
+                deletionBehavior: String(quality.metadataUpdates.deletionBehavior ?? 'keep_if_pii_free'),
                 warnings: quality.warnings,
             };
             chunks.push({

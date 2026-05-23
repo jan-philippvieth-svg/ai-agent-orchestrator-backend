@@ -64,6 +64,105 @@ Content Cleaning
 
 Nur Chunks mit `approvedForRetrieval=true` oder `status=approved` werden standardmäßig in `/chat` und `/search` genutzt. Jede Qdrant-Abfrage filtert zwingend nach `tenantId`.
 
+## DSGVO-Löschkonzept: RAG-Wissen von Payloads trennen
+
+Qdrant ist als kuratierte Wissensbasis gedacht, nicht als Speicherort für personenbezogene Rohdaten. Personenbezogene Daten werden in einem separaten Payload Store gehalten und in Qdrant nur über Referenzen verknüpft.
+
+```text
+Qdrant Chunk
+-> fachlicher, möglichst personenbezugsfreier Wissensbaustein
+-> tenantId, projectId, quality/retrieval metadata
+-> payloadRefs: ["customer:123", "ticket:456"]
+-> containsPersonalData=false
+
+Payload Store
+-> customer:123
+-> Name, E-Mail, Vertragsdaten, Ticket-Rohdaten
+-> subjectId für DSGVO-Löschanträge
+```
+
+Wird ein Löschantrag gestellt, löscht/anonymisiert das Backend die Payloads im separaten Store. PII-freie Wissenschunks bleiben erhalten, damit die RAG-Qualität nicht leidet. Nur falls ein Chunk selbst als `containsPersonalData=true` markiert wäre, wird er bei einem passenden Löschantrag aus Qdrant entfernt.
+
+Retrieval erzwingt zusätzlich:
+
+- `containsPersonalData=true` ist nicht normal retrievable
+- `/search` und `/chat` filtern vor dem Prompt erneut über den Payload Store
+- gelöschte oder gesperrte `payloadRefs` werden vor Prompt-Erstellung entfernt
+- Chunks mit personenbezogenen Daten müssen gelöscht oder bereinigt/re-embedded werden
+- `approvedForRetrieval=true` gilt nur für bereinigte Chunks
+
+Neue Privacy-Metadaten pro Chunk:
+
+```json
+{
+  "containsPersonalData": false,
+  "payloadRefs": ["customer:123"],
+  "privacyClass": "internal",
+  "retentionPolicy": "knowledge_base",
+  "deletionBehavior": "keep_if_pii_free"
+}
+```
+
+Payload außerhalb von Qdrant speichern:
+
+```bash
+curl -s http://localhost:3001/privacy/payloads \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-secret" \
+  -d '{
+    "tenantId": "tenant-1",
+    "payloadId": "customer:123",
+    "subjectId": "person-123",
+    "payloadType": "customer",
+    "data": {
+      "name": "Max Mustermann",
+      "email": "max@example.com"
+    }
+  }'
+```
+
+Wissenschunk mit Payload-Referenz ingestieren:
+
+```json
+{
+  "tenantId": "tenant-1",
+  "projectId": "demo",
+  "sourceType": "document",
+  "title": "Kündigungsregeln",
+  "content": "Für Vertragstyp X gilt eine Kündigungsfrist von 30 Tagen.",
+  "status": "approved",
+  "tags": ["vertrag"],
+  "privacy": {
+    "payloadRefs": ["customer:123"],
+    "privacyClass": "internal",
+    "deletionBehavior": "keep_if_pii_free"
+  }
+}
+```
+
+DSGVO-Löschantrag ausführen:
+
+```bash
+curl -s http://localhost:3001/privacy/delete-subject \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-secret" \
+  -d '{
+    "tenantId": "tenant-1",
+    "subjectId": "person-123"
+  }'
+```
+
+Erwartetes Ergebnis bei sauber getrennten Daten:
+
+```json
+{
+  "success": true,
+  "deletedPayloads": 1,
+  "qdrantChunksDeleted": 0,
+  "qdrantKnowledgeUnaffected": true
+}
+```
+
 ## Sicherheitskonzept für den API-Orchestrator
 
 Das Backend steuert nicht nur Performance, sondern setzt auch einfache Sicherheitsregeln durch: API-Key-Schutz, tenantId-Filter, Quality Gate vor Qdrant, keine sensiblen Logs, Größenlimits, Rate Limits und kontrollierter Zugriff auf große Modelle.

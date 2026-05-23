@@ -16,6 +16,7 @@ import { ingestRoutes } from './routes/ingest.routes.js';
 import { insightsRoutes } from './routes/insights.routes.js';
 import { metricsRoutes } from './routes/metrics.routes.js';
 import { modelsRoutes } from './routes/models.routes.js';
+import { privacyRoutes } from './routes/privacy.routes.js';
 import { searchRoutes } from './routes/search.routes.js';
 import { uiRoutes } from './routes/ui.routes.js';
 
@@ -78,6 +79,7 @@ export async function buildApp() {
   await app.register(chatRoutes);
   await app.register(ingestRoutes);
   await app.register(insightsRoutes);
+  await app.register(privacyRoutes);
   await app.register(searchRoutes);
   await app.register(modelsRoutes);
   await app.register(metricsRoutes);

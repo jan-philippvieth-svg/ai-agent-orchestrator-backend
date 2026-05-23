@@ -74,6 +74,7 @@ export class QdrantService {
 
     const must: unknown[] = [
       { key: 'metadata.tenantId', match: { value: request.tenantId } },
+      { key: 'metadata.containsPersonalData', match: { value: false } },
       {
         should: [
           { key: 'metadata.approvedForRetrieval', match: { value: true } },
@@ -144,6 +145,55 @@ export class QdrantService {
     return Boolean(data.result?.points?.length);
   }
 
+  async deleteChunksByPayloadRefs(tenantId: string, payloadRefs: string[]): Promise<number> {
+    const refs = payloadRefs.filter(Boolean);
+    if (refs.length === 0) return 0;
+
+    if (config.stubExternalServices) {
+      let deleted = 0;
+      for (let index = memoryStore.length - 1; index >= 0; index -= 1) {
+        const chunk = memoryStore[index];
+        if (
+          chunk.metadata.tenantId === tenantId &&
+          chunk.metadata.containsPersonalData &&
+          chunk.metadata.payloadRefs.some((ref) => refs.includes(ref))
+        ) {
+          memoryStore.splice(index, 1);
+          deleted += 1;
+        }
+      }
+      return deleted;
+    }
+
+    const response = await this.resilience.run('qdrant:delete-privacy', (signal) =>
+      fetch(`${config.qdrant.url}/collections/${config.qdrant.collection}/points/delete?wait=true`, {
+        method: 'POST',
+        headers: this.headers(),
+        body: JSON.stringify({
+          filter: {
+            must: [
+              { key: 'metadata.tenantId', match: { value: tenantId } },
+              { key: 'metadata.containsPersonalData', match: { value: true } },
+              {
+                should: refs.map((ref) => ({
+                  key: 'metadata.payloadRefs',
+                  match: { value: ref },
+                })),
+              },
+            ],
+          },
+        }),
+        signal,
+      }),
+    );
+
+    if (!response.ok) {
+      throw new Error(`Qdrant privacy delete failed with HTTP ${response.status}`);
+    }
+
+    return refs.length;
+  }
+
   async health(): Promise<boolean> {
     if (config.stubExternalServices) return true;
 
@@ -166,6 +216,7 @@ export class QdrantService {
   private memorySearch(request: SearchRequest): SearchResult[] {
     return memoryStore
       .filter((chunk) => chunk.metadata.tenantId === request.tenantId)
+      .filter((chunk) => !chunk.metadata.containsPersonalData)
       .filter((chunk) => chunk.metadata.approvedForRetrieval || chunk.metadata.status === 'approved')
       .filter((chunk) => !request.projectId || chunk.metadata.projectId === request.projectId)
       .filter((chunk) => !request.sourceType || chunk.metadata.sourceType === request.sourceType)

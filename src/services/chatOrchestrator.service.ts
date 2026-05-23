@@ -9,6 +9,7 @@ import { LlmService } from './llm.service.js';
 import { LoggingService } from './logging.service.js';
 import { MetricsService } from './metrics.service.js';
 import { ModelRouterService } from './modelRouter.service.js';
+import { PrivacyRetrievalService } from './privacyRetrieval.service.js';
 import { PromptBuilderService } from './promptBuilder.service.js';
 import { PromptGuardService } from './promptGuard.service.js';
 import { QdrantService } from './qdrant.service.js';
@@ -38,6 +39,7 @@ export class ChatOrchestratorService {
     private readonly cache = CacheService.getInstance(),
     private readonly tools = new ToolRegistryService(),
     private readonly toolRouter = new ToolRouterService(),
+    private readonly privacyRetrieval = new PrivacyRetrievalService(),
   ) {}
 
   async run(body: ChatRequest, options: ChatOrchestratorOptions = {}): Promise<ChatResponse> {
@@ -236,6 +238,9 @@ export class ChatOrchestratorService {
           limit: config.retrieval.defaultLimit,
         };
         chunks = await this.qdrant.search(vector, searchRequest);
+        const privacyFiltered = await this.privacyRetrieval.filter(guardedBody.tenantId, chunks);
+        chunks = privacyFiltered.chunks;
+        warnings.push(...privacyFiltered.warnings);
       } catch (error) {
         warnings.push('retrieval_unavailable');
         this.logging.chat({

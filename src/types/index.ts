@@ -4,6 +4,8 @@ export type PreferredModel = 'auto' | ModelSize;
 export type SourceType = 'document' | 'note' | 'email' | 'markdown' | 'pdf_text' | 'other';
 export type DocumentStatus = 'draft' | 'reviewed' | 'approved';
 export type ServiceStatus = 'ok' | 'unavailable';
+export type PrivacyClass = 'public_internal' | 'internal' | 'confidential' | 'personal_reference';
+export type DeletionBehavior = 'keep_if_pii_free' | 'delete_payload_only' | 'delete_chunk_if_pii';
 
 export interface ChatControls {
   promptGuardEnabled?: boolean;
@@ -75,6 +77,12 @@ export interface IngestRequest {
   content: string;
   status: DocumentStatus;
   tags: string[];
+  privacy?: {
+    privacyClass?: PrivacyClass;
+    payloadRefs?: string[];
+    containsPersonalData?: boolean;
+    deletionBehavior?: DeletionBehavior;
+  };
 }
 
 export interface IngestAcceptedResponse {
@@ -114,6 +122,11 @@ export interface ChunkMetadata {
   documentHash: string;
   createdAt: string;
   approvedForRetrieval: boolean;
+  containsPersonalData: boolean;
+  payloadRefs: string[];
+  privacyClass: PrivacyClass;
+  retentionPolicy: string;
+  deletionBehavior: DeletionBehavior;
   warnings?: string[];
   [key: string]: unknown;
 }
@@ -137,6 +150,28 @@ export interface QualityGateResult {
   cleanedContent?: string;
   warnings: string[];
   metadataUpdates: Record<string, unknown>;
+}
+
+export interface PrivacyPayloadRecord {
+  tenantId: string;
+  payloadId: string;
+  subjectId: string;
+  payloadType: 'customer' | 'user' | 'ticket' | 'contract' | 'other';
+  data: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  status: 'active' | 'deleted';
+}
+
+export interface DeletionRequestResult {
+  success: true;
+  tenantId: string;
+  subjectId: string;
+  deletedPayloads: number;
+  qdrantChunksDeleted: number;
+  qdrantKnowledgeUnaffected: boolean;
+  warnings: string[];
 }
 
 export type ToolCallStatus = 'success' | 'skipped' | 'error';

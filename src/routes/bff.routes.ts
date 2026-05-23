@@ -9,6 +9,7 @@ import { BffSessionService, type BffSession } from '../services/bffSession.servi
 import { ChatOrchestratorService } from '../services/chatOrchestrator.service.js';
 import { EmbeddingService } from '../services/embedding.service.js';
 import { IngestionService } from '../services/ingestion.service.js';
+import { PrivacyRetrievalService } from '../services/privacyRetrieval.service.js';
 import { QdrantService } from '../services/qdrant.service.js';
 
 const bffSessionRequestSchema = z.object({
@@ -55,6 +56,7 @@ export async function bffRoutes(app: FastifyInstance): Promise<void> {
   const ingestion = new IngestionService();
   const embeddings = new EmbeddingService();
   const qdrant = new QdrantService();
+  const privacyRetrieval = new PrivacyRetrievalService();
   const benchmarkHistory = new BenchmarkHistoryService();
 
   app.post('/bff/session', async (request, reply) => {
@@ -125,10 +127,12 @@ export async function bffRoutes(app: FastifyInstance): Promise<void> {
       tenantId: session.tenantId,
       limit: Math.min(parsed.data.limit, config.retrieval.maxLimit),
     });
+    const privacyFiltered = await privacyRetrieval.filter(session.tenantId, results);
 
     return {
       success: true,
-      results,
+      results: privacyFiltered.chunks,
+      warnings: privacyFiltered.warnings.length > 0 ? privacyFiltered.warnings : undefined,
     };
   });
 

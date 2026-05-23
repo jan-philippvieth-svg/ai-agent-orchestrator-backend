@@ -8,6 +8,7 @@ import { BffSessionService } from '../services/bffSession.service.js';
 import { ChatOrchestratorService } from '../services/chatOrchestrator.service.js';
 import { EmbeddingService } from '../services/embedding.service.js';
 import { IngestionService } from '../services/ingestion.service.js';
+import { PrivacyRetrievalService } from '../services/privacyRetrieval.service.js';
 import { QdrantService } from '../services/qdrant.service.js';
 const bffSessionRequestSchema = z.object({
     tenantId: z.string().min(1).max(120),
@@ -44,6 +45,7 @@ export async function bffRoutes(app) {
     const ingestion = new IngestionService();
     const embeddings = new EmbeddingService();
     const qdrant = new QdrantService();
+    const privacyRetrieval = new PrivacyRetrievalService();
     const benchmarkHistory = new BenchmarkHistoryService();
     app.post('/bff/session', async (request, reply) => {
         const devLoginKey = request.headers['x-bff-login-key'];
@@ -109,9 +111,11 @@ export async function bffRoutes(app) {
             tenantId: session.tenantId,
             limit: Math.min(parsed.data.limit, config.retrieval.maxLimit),
         });
+        const privacyFiltered = await privacyRetrieval.filter(session.tenantId, results);
         return {
             success: true,
-            results,
+            results: privacyFiltered.chunks,
+            warnings: privacyFiltered.warnings.length > 0 ? privacyFiltered.warnings : undefined,
         };
     });
     app.post('/bff/ingest', async (request, reply) => {

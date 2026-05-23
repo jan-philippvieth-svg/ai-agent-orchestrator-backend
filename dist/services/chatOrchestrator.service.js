@@ -8,6 +8,7 @@ import { LlmService } from './llm.service.js';
 import { LoggingService } from './logging.service.js';
 import { MetricsService } from './metrics.service.js';
 import { ModelRouterService } from './modelRouter.service.js';
+import { PrivacyRetrievalService } from './privacyRetrieval.service.js';
 import { PromptBuilderService } from './promptBuilder.service.js';
 import { PromptGuardService } from './promptGuard.service.js';
 import { QdrantService } from './qdrant.service.js';
@@ -29,7 +30,8 @@ export class ChatOrchestratorService {
     cache;
     tools;
     toolRouter;
-    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), embeddings = new EmbeddingService(), qdrant = new QdrantService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService()) {
+    privacyRetrieval;
+    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), embeddings = new EmbeddingService(), qdrant = new QdrantService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService(), privacyRetrieval = new PrivacyRetrievalService()) {
         this.classifier = classifier;
         this.router = router;
         this.embeddings = embeddings;
@@ -44,6 +46,7 @@ export class ChatOrchestratorService {
         this.cache = cache;
         this.tools = tools;
         this.toolRouter = toolRouter;
+        this.privacyRetrieval = privacyRetrieval;
     }
     async run(body, options = {}) {
         const start = Date.now();
@@ -227,6 +230,9 @@ export class ChatOrchestratorService {
                     limit: config.retrieval.defaultLimit,
                 };
                 chunks = await this.qdrant.search(vector, searchRequest);
+                const privacyFiltered = await this.privacyRetrieval.filter(guardedBody.tenantId, chunks);
+                chunks = privacyFiltered.chunks;
+                warnings.push(...privacyFiltered.warnings);
             }
             catch (error) {
                 warnings.push('retrieval_unavailable');
