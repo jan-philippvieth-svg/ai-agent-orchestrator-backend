@@ -12,6 +12,7 @@ export interface ChatControls {
   toolRouterEnabled?: boolean;
   cacheEnabled?: boolean;
   benchmarkMode?: boolean;
+  hybridRetrievalEnabled?: boolean;
 }
 
 export interface ChatRequest {
@@ -53,7 +54,15 @@ export interface ChatResponse {
     guard: PromptGuardMetadata;
     controls?: ChatControls & {
       retrievalEnabled: boolean;
+      hybridRetrievalEnabled: boolean;
       stubMode: boolean;
+    };
+    retrievalMode?: 'disabled' | 'vector' | 'hybrid';
+    retrievalDiagnostics?: {
+      vectorResults: number;
+      sparseResults: number;
+      fusedResults: number;
+      rankFusion: 'rrf' | 'none';
     };
     efficiency: {
       actualTokens: number;
@@ -107,6 +116,7 @@ export interface SearchRequest {
   sourceType?: string;
   status?: DocumentStatus;
   limit: number;
+  useHybridRetrieval?: boolean;
 }
 
 export interface ChunkMetadata {

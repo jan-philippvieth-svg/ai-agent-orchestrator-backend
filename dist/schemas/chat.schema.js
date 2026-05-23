@@ -11,6 +11,7 @@ export const chatRequestSchema = z.object({
         toolRouterEnabled: z.boolean().optional(),
         cacheEnabled: z.boolean().optional(),
         benchmarkMode: z.boolean().optional(),
+        hybridRetrievalEnabled: z.boolean().optional(),
     })
         .strict()
         .optional(),

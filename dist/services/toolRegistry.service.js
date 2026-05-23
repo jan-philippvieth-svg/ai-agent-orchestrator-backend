@@ -1,15 +1,12 @@
 import { config } from '../config.js';
-import { EmbeddingService } from './embedding.service.js';
 import { MetricsService } from './metrics.service.js';
-import { QdrantService } from './qdrant.service.js';
+import { RetrievalService } from './retrieval.service.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
 export class ToolRegistryService {
-    embeddings;
-    qdrant;
+    retrieval;
     metrics;
-    constructor(embeddings = new EmbeddingService(), qdrant = new QdrantService(), metrics = MetricsService.getInstance()) {
-        this.embeddings = embeddings;
-        this.qdrant = qdrant;
+    constructor(retrieval = new RetrievalService(), metrics = MetricsService.getInstance()) {
+        this.retrieval = retrieval;
         this.metrics = metrics;
     }
     async executeForChat(request, selectedTools) {
@@ -59,29 +56,33 @@ export class ToolRegistryService {
     async searchKnowledge(request) {
         const start = Date.now();
         try {
-            const vector = await this.embeddings.embed(request.message);
             const searchRequest = {
                 tenantId: request.tenantId,
                 query: request.message,
                 projectId: request.metadata?.projectId,
                 sourceType: request.metadata?.sourceType,
                 limit: config.tools.searchLimit,
+                useHybridRetrieval: request.controls?.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled,
             };
-            const results = await this.qdrant.search(vector, searchRequest);
-            const rawContent = JSON.stringify(results, null, 2);
-            const content = JSON.stringify(results.map((result) => ({
-                score: result.score,
-                title: result.metadata.title,
-                sourceType: result.metadata.sourceType,
-                projectId: result.metadata.projectId,
-                chunkIndex: result.metadata.chunkIndex,
-                excerpt: result.text.slice(0, 700),
-            })), null, 2);
+            const retrievalResult = await this.retrieval.retrieve(searchRequest);
+            const rawContent = JSON.stringify(retrievalResult, null, 2);
+            const content = JSON.stringify({
+                retrievalMode: retrievalResult.mode,
+                diagnostics: retrievalResult.diagnostics,
+                results: retrievalResult.results.map((result) => ({
+                    score: result.score,
+                    title: result.metadata.title,
+                    sourceType: result.metadata.sourceType,
+                    projectId: result.metadata.projectId,
+                    chunkIndex: result.metadata.chunkIndex,
+                    excerpt: result.text.slice(0, 700),
+                })),
+            }, null, 2);
             return {
                 name: 'search_knowledge',
                 status: 'success',
                 content,
-                itemsUsed: results.length,
+                itemsUsed: retrievalResult.results.length,
                 ...this.tokenEfficiency(rawContent, content),
                 processingTimeMs: Date.now() - start,
             };

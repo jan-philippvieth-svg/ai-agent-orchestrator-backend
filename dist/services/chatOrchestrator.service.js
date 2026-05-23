@@ -3,23 +3,20 @@ import { estimateTokens } from '../utils/tokenEstimator.js';
 import { CacheService } from './cache.service.js';
 import { ClassifierService } from './classifier.service.js';
 import { EfficiencyEstimatorService } from './efficiencyEstimator.service.js';
-import { EmbeddingService } from './embedding.service.js';
 import { LlmService } from './llm.service.js';
 import { LoggingService } from './logging.service.js';
 import { MetricsService } from './metrics.service.js';
 import { ModelRouterService } from './modelRouter.service.js';
-import { PrivacyRetrievalService } from './privacyRetrieval.service.js';
 import { PromptBuilderService } from './promptBuilder.service.js';
 import { PromptGuardService } from './promptGuard.service.js';
-import { QdrantService } from './qdrant.service.js';
+import { RetrievalService } from './retrieval.service.js';
 import { ToolRegistryService } from './toolRegistry.service.js';
 import { ToolRouterService } from './toolRouter.service.js';
 import { UserInsightService } from './userInsight.service.js';
 export class ChatOrchestratorService {
     classifier;
     router;
-    embeddings;
-    qdrant;
+    retrieval;
     prompts;
     llm;
     logging;
@@ -30,12 +27,10 @@ export class ChatOrchestratorService {
     cache;
     tools;
     toolRouter;
-    privacyRetrieval;
-    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), embeddings = new EmbeddingService(), qdrant = new QdrantService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService(), privacyRetrieval = new PrivacyRetrievalService()) {
+    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), retrieval = new RetrievalService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService()) {
         this.classifier = classifier;
         this.router = router;
-        this.embeddings = embeddings;
-        this.qdrant = qdrant;
+        this.retrieval = retrieval;
         this.prompts = prompts;
         this.llm = llm;
         this.logging = logging;
@@ -46,7 +41,6 @@ export class ChatOrchestratorService {
         this.cache = cache;
         this.tools = tools;
         this.toolRouter = toolRouter;
-        this.privacyRetrieval = privacyRetrieval;
     }
     async run(body, options = {}) {
         const start = Date.now();
@@ -54,6 +48,7 @@ export class ChatOrchestratorService {
         const promptGuardEnabled = controls.promptGuardEnabled !== false;
         const toolRouterEnabled = controls.toolRouterEnabled !== false;
         const cacheEnabled = controls.cacheEnabled !== false;
+        const hybridRetrievalEnabled = controls.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled;
         const guard = promptGuardEnabled
             ? this.promptGuard.evaluate(body.message)
             : {
@@ -112,6 +107,7 @@ export class ChatOrchestratorService {
                         promptGuardEnabled,
                         toolRouterEnabled,
                         cacheEnabled,
+                        hybridRetrievalEnabled,
                         stubMode: config.stubExternalServices,
                     },
                     cache: {
@@ -195,6 +191,7 @@ export class ChatOrchestratorService {
                             promptGuardEnabled,
                             toolRouterEnabled,
                             cacheEnabled,
+                            hybridRetrievalEnabled,
                             stubMode: config.stubExternalServices,
                         },
                     },
@@ -218,21 +215,21 @@ export class ChatOrchestratorService {
             routedModel: selectedModel,
         });
         let chunks = [];
+        let retrievalResult;
         const warnings = [];
         if (guardedBody.useRetrieval) {
             try {
-                const vector = await this.embeddings.embed(guardedBody.message);
                 const searchRequest = {
                     tenantId: guardedBody.tenantId,
                     query: guardedBody.message,
                     projectId: guardedBody.metadata?.projectId,
                     sourceType: guardedBody.metadata?.sourceType,
                     limit: config.retrieval.defaultLimit,
+                    useHybridRetrieval: hybridRetrievalEnabled,
                 };
-                chunks = await this.qdrant.search(vector, searchRequest);
-                const privacyFiltered = await this.privacyRetrieval.filter(guardedBody.tenantId, chunks);
-                chunks = privacyFiltered.chunks;
-                warnings.push(...privacyFiltered.warnings);
+                retrievalResult = await this.retrieval.retrieve(searchRequest);
+                chunks = retrievalResult.results;
+                warnings.push(...retrievalResult.warnings);
             }
             catch (error) {
                 warnings.push('retrieval_unavailable');
@@ -311,6 +308,10 @@ export class ChatOrchestratorService {
                 classification,
                 tokensEstimated,
                 retrievalUsed: guardedBody.useRetrieval,
+                retrievalMode: guardedBody.useRetrieval
+                    ? (retrievalResult?.mode ?? (hybridRetrievalEnabled ? 'hybrid' : 'vector'))
+                    : 'disabled',
+                retrievalDiagnostics: guardedBody.useRetrieval ? retrievalResult?.diagnostics : undefined,
                 chunksUsed: chunks.length,
                 processingTimeMs,
                 warnings: warnings.length > 0 ? warnings : undefined,
@@ -344,6 +345,7 @@ export class ChatOrchestratorService {
                     promptGuardEnabled,
                     toolRouterEnabled,
                     cacheEnabled,
+                    hybridRetrievalEnabled,
                     stubMode: config.stubExternalServices,
                 },
                 efficiency: {

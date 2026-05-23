@@ -15,6 +15,9 @@ export async function uiRoutes(app) {
         stubMode: config.stubExternalServices,
         toolCallingEnabled: config.tools.enabled,
         cacheEnabled: config.cache.enabled,
+        hybridRetrievalEnabled: config.retrieval.hybridEnabled,
+        sparseSearchEnabled: config.retrieval.sparseEnabled,
+        rankFusionK: config.retrieval.rankFusionK,
         benchmark: {
             ragModel: config.benchmark.ragModel,
             timeoutMs: config.benchmark.timeoutMs,

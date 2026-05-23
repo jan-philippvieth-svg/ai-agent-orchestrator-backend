@@ -7,10 +7,8 @@ import { bffChatRequestSchema, bffIngestRequestSchema, bffSearchRequestSchema } 
 import { BenchmarkHistoryService } from '../services/benchmarkHistory.service.js';
 import { BffSessionService, type BffSession } from '../services/bffSession.service.js';
 import { ChatOrchestratorService } from '../services/chatOrchestrator.service.js';
-import { EmbeddingService } from '../services/embedding.service.js';
 import { IngestionService } from '../services/ingestion.service.js';
-import { PrivacyRetrievalService } from '../services/privacyRetrieval.service.js';
-import { QdrantService } from '../services/qdrant.service.js';
+import { RetrievalService } from '../services/retrieval.service.js';
 
 const bffSessionRequestSchema = z.object({
   tenantId: z.string().min(1).max(120),
@@ -54,9 +52,7 @@ export async function bffRoutes(app: FastifyInstance): Promise<void> {
   const sessions = new BffSessionService();
   const chat = new ChatOrchestratorService();
   const ingestion = new IngestionService();
-  const embeddings = new EmbeddingService();
-  const qdrant = new QdrantService();
-  const privacyRetrieval = new PrivacyRetrievalService();
+  const retrieval = new RetrievalService();
   const benchmarkHistory = new BenchmarkHistoryService();
 
   app.post('/bff/session', async (request, reply) => {
@@ -121,18 +117,18 @@ export async function bffRoutes(app: FastifyInstance): Promise<void> {
       return reply.code(400).send({ success: false, error: 'ValidationError', issues: parsed.error.flatten() });
     }
 
-    const vector = await embeddings.embed(parsed.data.query);
-    const results = await qdrant.search(vector, {
+    const retrievalResult = await retrieval.retrieve({
       ...parsed.data,
       tenantId: session.tenantId,
       limit: Math.min(parsed.data.limit, config.retrieval.maxLimit),
     });
-    const privacyFiltered = await privacyRetrieval.filter(session.tenantId, results);
 
     return {
       success: true,
-      results: privacyFiltered.chunks,
-      warnings: privacyFiltered.warnings.length > 0 ? privacyFiltered.warnings : undefined,
+      results: retrievalResult.results,
+      retrievalMode: retrievalResult.mode,
+      retrievalDiagnostics: retrievalResult.diagnostics,
+      warnings: retrievalResult.warnings.length > 0 ? retrievalResult.warnings : undefined,
     };
   });
 

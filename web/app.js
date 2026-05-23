@@ -43,6 +43,7 @@ async function loadConfig() {
     const config = await request('/ui/config');
     state.stubStatus.textContent = config.stubMode ? 'Stub-Modus aktiv' : 'Echte Services aktiv';
     state.stubStatus.className = config.stubMode ? 'status warn' : 'status ok';
+    $('hybridRetrievalEnabled').checked = Boolean(config.hybridRetrievalEnabled);
   } catch (error) {
     state.stubStatus.textContent = 'Status nicht verfügbar';
     state.stubStatus.className = 'status muted';
@@ -88,6 +89,7 @@ function buildChatRequest() {
       toolRouterEnabled: $('toolRouterEnabled').checked,
       promptGuardEnabled: $('promptGuardEnabled').checked,
       cacheEnabled: $('cacheEnabled').checked,
+      hybridRetrievalEnabled: $('hybridRetrievalEnabled').checked,
       benchmarkMode: $('benchmarkMode').checked,
     },
     metadata: {
@@ -130,15 +132,23 @@ async function sendChat(event) {
 
 function metaSummary(metadata, elapsed) {
   const tools = metadata.tools?.calls?.map((tool) => tool.name).join(', ') || 'keine Tools';
-  return `${metadata.selectedModel} · ${metadata.classification} · ${metadata.processingTimeMs ?? elapsed}ms · ${metadata.chunksUsed} Chunks · ${tools}`;
+  const retrieval = metadata.retrievalMode ? ` · ${metadata.retrievalMode}` : '';
+  return `${metadata.selectedModel} · ${metadata.classification} · ${metadata.processingTimeMs ?? elapsed}ms · ${metadata.chunksUsed} Chunks${retrieval} · ${tools}`;
 }
 
 function renderMetadata(metadata) {
+  const diagnostics = metadata.retrievalDiagnostics;
+  const retrievalLabel = metadata.retrievalMode
+    ? metadata.retrievalMode === 'disabled'
+      ? 'disabled'
+      : `${metadata.retrievalMode} (${diagnostics?.vectorResults ?? 0} vector / ${diagnostics?.sparseResults ?? 0} sparse / ${diagnostics?.fusedResults ?? 0} fused)`
+    : '-';
   const rows = [
     ['Modell', `${metadata.selectedModel} (route: ${metadata.routedModel})`],
     ['Klassifikation', metadata.classification],
     ['Latenz', `${metadata.processingTimeMs}ms`],
     ['Chunks', String(metadata.chunksUsed)],
+    ['Retrieval', retrievalLabel],
     ['Tools', metadata.tools?.calls?.map((tool) => `${tool.name}:${tool.status}`).join(', ') || 'keine'],
     ['Tokens', String(metadata.tokensEstimated ?? '-')],
   ];

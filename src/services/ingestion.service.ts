@@ -12,6 +12,7 @@ import { ChunkingService } from './chunking.service.js';
 import { EmbeddingService } from './embedding.service.js';
 import { IngestionQualityService } from './ingestionQuality.service.js';
 import { QdrantService } from './qdrant.service.js';
+import { SparseSearchService } from './sparseSearch.service.js';
 
 export class IngestionService {
   constructor(
@@ -19,6 +20,7 @@ export class IngestionService {
     private readonly chunking = new ChunkingService(),
     private readonly embeddings = new EmbeddingService(),
     private readonly qdrant = new QdrantService(),
+    private readonly sparse = new SparseSearchService(),
   ) {}
 
   async ingest(input: IngestRequest): Promise<IngestAcceptedResponse | IngestRejectedResponse> {
@@ -103,6 +105,7 @@ export class IngestionService {
     }
 
     await this.qdrant.upsertChunks(chunks);
+    await this.sparse.indexChunks(chunks);
 
     return {
       success: true,

@@ -1,14 +1,10 @@
 import type { FastifyInstance } from 'fastify';
 import { config } from '../config.js';
 import { searchRequestSchema } from '../schemas/search.schema.js';
-import { EmbeddingService } from '../services/embedding.service.js';
-import { PrivacyRetrievalService } from '../services/privacyRetrieval.service.js';
-import { QdrantService } from '../services/qdrant.service.js';
+import { RetrievalService } from '../services/retrieval.service.js';
 
 export async function searchRoutes(app: FastifyInstance): Promise<void> {
-  const embeddings = new EmbeddingService();
-  const qdrant = new QdrantService();
-  const privacyRetrieval = new PrivacyRetrievalService();
+  const retrieval = new RetrievalService();
 
   app.post('/search', async (request, reply) => {
     const parsed = searchRequestSchema.safeParse(request.body);
@@ -21,14 +17,14 @@ export async function searchRoutes(app: FastifyInstance): Promise<void> {
       limit: Math.min(parsed.data.limit, config.retrieval.maxLimit),
     };
 
-    const vector = await embeddings.embed(body.query);
-    const results = await qdrant.search(vector, body);
-    const privacyFiltered = await privacyRetrieval.filter(body.tenantId, results);
+    const retrievalResult = await retrieval.retrieve(body);
 
     return {
       success: true,
-      results: privacyFiltered.chunks,
-      warnings: privacyFiltered.warnings.length > 0 ? privacyFiltered.warnings : undefined,
+      results: retrievalResult.results,
+      retrievalMode: retrievalResult.mode,
+      retrievalDiagnostics: retrievalResult.diagnostics,
+      warnings: retrievalResult.warnings.length > 0 ? retrievalResult.warnings : undefined,
     };
   });
 }

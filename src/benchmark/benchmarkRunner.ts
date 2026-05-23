@@ -2,12 +2,11 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { config } from '../config.js';
 import { ClassifierService } from '../services/classifier.service.js';
-import { EmbeddingService } from '../services/embedding.service.js';
 import { LlmService } from '../services/llm.service.js';
 import { ModelRouterService } from '../services/modelRouter.service.js';
 import { PromptBuilderService } from '../services/promptBuilder.service.js';
 import { PromptGuardService } from '../services/promptGuard.service.js';
-import { QdrantService } from '../services/qdrant.service.js';
+import { RetrievalService } from '../services/retrieval.service.js';
 import { ToolRegistryService } from '../services/toolRegistry.service.js';
 import { ToolRouterService } from '../services/toolRouter.service.js';
 import type { ChatRequest, ModelSize, SearchRequest, SearchResult, ToolCallResult, ToolSelection } from '../types/index.js';
@@ -31,8 +30,7 @@ export class BenchmarkRunner {
     private readonly classifier = new ClassifierService(),
     private readonly modelRouter = new ModelRouterService(),
     private readonly promptGuard = new PromptGuardService(),
-    private readonly embeddings = new EmbeddingService(),
-    private readonly qdrant = new QdrantService(),
+    private readonly retrieval = new RetrievalService(),
     private readonly prompts = new PromptBuilderService(),
     private readonly llm = new LlmService(),
     private readonly toolRouter = new ToolRouterService(),
@@ -188,15 +186,16 @@ export class BenchmarkRunner {
   }
 
   private async retrieve(body: ChatRequest, scenario: BenchmarkScenario): Promise<SearchResult[]> {
-    const vector = await this.embeddings.embed(body.message);
     const searchRequest: SearchRequest = {
       tenantId: body.tenantId,
       query: body.message,
       projectId: body.metadata?.projectId,
       sourceType: body.metadata?.sourceType,
       limit: config.retrieval.defaultLimit,
+      useHybridRetrieval: scenario === 'optimized',
     };
-    return this.qdrant.search(vector, searchRequest);
+    const result = await this.retrieval.retrieve(searchRequest);
+    return result.results;
   }
 
   private buildReport(results: BenchmarkScenarioResult[]): BenchmarkRunReport {

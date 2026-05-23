@@ -4,15 +4,13 @@ import { estimateTokens } from '../utils/tokenEstimator.js';
 import { CacheService } from './cache.service.js';
 import { ClassifierService } from './classifier.service.js';
 import { EfficiencyEstimatorService } from './efficiencyEstimator.service.js';
-import { EmbeddingService } from './embedding.service.js';
 import { LlmService } from './llm.service.js';
 import { LoggingService } from './logging.service.js';
 import { MetricsService } from './metrics.service.js';
 import { ModelRouterService } from './modelRouter.service.js';
-import { PrivacyRetrievalService } from './privacyRetrieval.service.js';
 import { PromptBuilderService } from './promptBuilder.service.js';
 import { PromptGuardService } from './promptGuard.service.js';
-import { QdrantService } from './qdrant.service.js';
+import { RetrievalService, type RetrievalResult } from './retrieval.service.js';
 import { ToolRegistryService } from './toolRegistry.service.js';
 import { ToolRouterService } from './toolRouter.service.js';
 import { UserInsightService } from './userInsight.service.js';
@@ -27,8 +25,7 @@ export class ChatOrchestratorService {
   constructor(
     private readonly classifier = new ClassifierService(),
     private readonly router = new ModelRouterService(),
-    private readonly embeddings = new EmbeddingService(),
-    private readonly qdrant = new QdrantService(),
+    private readonly retrieval = new RetrievalService(),
     private readonly prompts = new PromptBuilderService(),
     private readonly llm = new LlmService(),
     private readonly logging = new LoggingService(),
@@ -39,7 +36,6 @@ export class ChatOrchestratorService {
     private readonly cache = CacheService.getInstance(),
     private readonly tools = new ToolRegistryService(),
     private readonly toolRouter = new ToolRouterService(),
-    private readonly privacyRetrieval = new PrivacyRetrievalService(),
   ) {}
 
   async run(body: ChatRequest, options: ChatOrchestratorOptions = {}): Promise<ChatResponse> {
@@ -48,6 +44,7 @@ export class ChatOrchestratorService {
     const promptGuardEnabled = controls.promptGuardEnabled !== false;
     const toolRouterEnabled = controls.toolRouterEnabled !== false;
     const cacheEnabled = controls.cacheEnabled !== false;
+    const hybridRetrievalEnabled = controls.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled;
     const guard = promptGuardEnabled
       ? this.promptGuard.evaluate(body.message)
       : {
@@ -110,6 +107,7 @@ export class ChatOrchestratorService {
             promptGuardEnabled,
             toolRouterEnabled,
             cacheEnabled,
+            hybridRetrievalEnabled,
             stubMode: config.stubExternalServices,
           },
           cache: {
@@ -199,6 +197,7 @@ export class ChatOrchestratorService {
               promptGuardEnabled,
               toolRouterEnabled,
               cacheEnabled,
+              hybridRetrievalEnabled,
               stubMode: config.stubExternalServices,
             },
           },
@@ -226,21 +225,21 @@ export class ChatOrchestratorService {
     });
 
     let chunks: SearchResult[] = [];
+    let retrievalResult: RetrievalResult | undefined;
     const warnings: string[] = [];
     if (guardedBody.useRetrieval) {
       try {
-        const vector = await this.embeddings.embed(guardedBody.message);
         const searchRequest: SearchRequest = {
           tenantId: guardedBody.tenantId,
           query: guardedBody.message,
           projectId: guardedBody.metadata?.projectId,
           sourceType: guardedBody.metadata?.sourceType,
           limit: config.retrieval.defaultLimit,
+          useHybridRetrieval: hybridRetrievalEnabled,
         };
-        chunks = await this.qdrant.search(vector, searchRequest);
-        const privacyFiltered = await this.privacyRetrieval.filter(guardedBody.tenantId, chunks);
-        chunks = privacyFiltered.chunks;
-        warnings.push(...privacyFiltered.warnings);
+        retrievalResult = await this.retrieval.retrieve(searchRequest);
+        chunks = retrievalResult.results;
+        warnings.push(...retrievalResult.warnings);
       } catch (error) {
         warnings.push('retrieval_unavailable');
         this.logging.chat({
@@ -326,6 +325,10 @@ export class ChatOrchestratorService {
         classification,
         tokensEstimated,
         retrievalUsed: guardedBody.useRetrieval,
+        retrievalMode: guardedBody.useRetrieval
+          ? (retrievalResult?.mode ?? (hybridRetrievalEnabled ? 'hybrid' : 'vector'))
+          : 'disabled',
+        retrievalDiagnostics: guardedBody.useRetrieval ? retrievalResult?.diagnostics : undefined,
         chunksUsed: chunks.length,
         processingTimeMs,
         warnings: warnings.length > 0 ? warnings : undefined,
@@ -359,6 +362,7 @@ export class ChatOrchestratorService {
           promptGuardEnabled,
           toolRouterEnabled,
           cacheEnabled,
+          hybridRetrievalEnabled,
           stubMode: config.stubExternalServices,
         },
         efficiency: {

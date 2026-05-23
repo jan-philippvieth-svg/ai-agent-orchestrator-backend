@@ -51,6 +51,10 @@ export const config = {
     retrieval: {
         defaultLimit: readNumber('RETRIEVAL_DEFAULT_LIMIT', 5),
         maxLimit: readNumber('RETRIEVAL_MAX_LIMIT', 12),
+        hybridEnabled: readBoolean('HYBRID_RETRIEVAL_ENABLED', true),
+        sparseEnabled: readBoolean('SPARSE_SEARCH_ENABLED', true),
+        sparseLimit: readNumber('SPARSE_SEARCH_LIMIT', 8),
+        rankFusionK: readNumber('RANK_FUSION_K', 60),
     },
     cors: {
         allowedOrigins: readList('CORS_ALLOWED_ORIGINS'),

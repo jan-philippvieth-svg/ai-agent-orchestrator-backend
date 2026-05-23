@@ -7,6 +7,7 @@ export const searchRequestSchema = z.object({
   sourceType: z.string().min(1).max(80).optional(),
   status: z.enum(['draft', 'reviewed', 'approved']).optional(),
   limit: z.number().int().min(1).max(20).default(5),
+  useHybridRetrieval: z.boolean().optional(),
 });
 
 export type SearchRequestInput = z.infer<typeof searchRequestSchema>;

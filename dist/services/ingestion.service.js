@@ -4,16 +4,19 @@ import { ChunkingService } from './chunking.service.js';
 import { EmbeddingService } from './embedding.service.js';
 import { IngestionQualityService } from './ingestionQuality.service.js';
 import { QdrantService } from './qdrant.service.js';
+import { SparseSearchService } from './sparseSearch.service.js';
 export class IngestionService {
     qualityGate;
     chunking;
     embeddings;
     qdrant;
-    constructor(qualityGate = new IngestionQualityService(), chunking = new ChunkingService(), embeddings = new EmbeddingService(), qdrant = new QdrantService()) {
+    sparse;
+    constructor(qualityGate = new IngestionQualityService(), chunking = new ChunkingService(), embeddings = new EmbeddingService(), qdrant = new QdrantService(), sparse = new SparseSearchService()) {
         this.qualityGate = qualityGate;
         this.chunking = chunking;
         this.embeddings = embeddings;
         this.qdrant = qdrant;
+        this.sparse = sparse;
     }
     async ingest(input) {
         const quality = this.qualityGate.evaluate(input);
@@ -87,6 +90,7 @@ export class IngestionService {
             };
         }
         await this.qdrant.upsertChunks(chunks);
+        await this.sparse.indexChunks(chunks);
         return {
             success: true,
             documentId,

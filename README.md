@@ -17,8 +17,11 @@ flowchart TD
   Guard --> Classifier["Request Classification"]
   Classifier --> Retrieval{"Retrieval nötig?"}
   Retrieval -- ja --> Embed["Embedding Service"]
-  Embed --> Qdrant["Qdrant mit tenantId-Filter"]
-  Qdrant --> Context["Context Reduction"]
+  Embed --> VectorSearch["Vector Search: Qdrant mit tenantId-Filter"]
+  Retrieval -- ja --> SparseSearch["Sparse/BM25 Search mit Privacy-Filtern"]
+  VectorSearch --> RankFusion["Rank Fusion: RRF"]
+  SparseSearch --> RankFusion
+  RankFusion --> Context["Context Reduction"]
   Retrieval -- nein --> Context
   Context --> Router["Model Routing"]
   Router --> SmallPath["Small / Medium Path"]
@@ -40,7 +43,7 @@ User Request
 -> API Backend
 -> Prompt Guard und Input Sanitization
 -> Request Classification
--> optional Qdrant Retrieval mit tenantId-Filter
+-> optional Hybrid Retrieval: Qdrant + Sparse/BM25 + Rank Fusion
 -> Context Reduction
 -> Model Routing
 -> bei large: Tool-Router filtert relevante Tools
@@ -63,6 +66,60 @@ Content Cleaning
 ```
 
 Nur Chunks mit `approvedForRetrieval=true` oder `status=approved` werden standardmäßig in `/chat` und `/search` genutzt. Jede Qdrant-Abfrage filtert zwingend nach `tenantId`.
+
+## Hybrid Retrieval: Vector Search + Sparse/BM25 + Rank Fusion
+
+Das Backend kann Retrieval jetzt zweigleisig ausführen:
+
+- `Vector Search`: semantische Suche über Embeddings und Qdrant
+- `Sparse/BM25 Search`: keyword-starke Suche über einen lokalen, tenant-gefilterten Sparse Index
+- `Rank Fusion`: deterministische Zusammenführung per Reciprocal Rank Fusion (RRF)
+
+Das beißt sich nicht mit der bestehenden Qdrant-Struktur. Qdrant bleibt der primäre Vector Store, Sparse Search ist eine ergänzende Retrieval-Spur für exakte Begriffe, Produktnamen, Fehlercodes, IDs oder kurze Fachwörter, die rein semantisch manchmal schlechter ranken.
+
+Wichtig: Auch die Sparse-Spur erzwingt `tenantId`, `approvedForRetrieval/status=approved`, `containsPersonalData=false` und optionale Filter wie `projectId`, `sourceType` und `status`. Der lokale Sparse Index (`data/sparse-index.json`) ist Runtime-Datenbestand und wird nicht in Git versioniert.
+
+Konfiguration:
+
+```env
+HYBRID_RETRIEVAL_ENABLED=true
+SPARSE_SEARCH_ENABLED=true
+SPARSE_SEARCH_LIMIT=8
+RANK_FUSION_K=60
+```
+
+Pro Request kann Hybrid Retrieval in `/chat`, `/bff/chat` und `/search` deaktiviert werden:
+
+```json
+{
+  "useRetrieval": true,
+  "controls": {
+    "hybridRetrievalEnabled": false
+  }
+}
+```
+
+Die Antwort-Metadaten zeigen transparent, welcher Modus aktiv war:
+
+```json
+{
+  "retrievalMode": "hybrid",
+  "retrievalDiagnostics": {
+    "vectorResults": 5,
+    "sparseResults": 3,
+    "fusedResults": 5,
+    "rankFusion": "rrf"
+  }
+}
+```
+
+Für Chat-Anfragen gilt:
+
+```text
+useRetrieval=false -> retrievalMode: "disabled"
+useRetrieval=true + hybridRetrievalEnabled=false -> retrievalMode: "vector"
+useRetrieval=true + hybridRetrievalEnabled=true -> retrievalMode: "hybrid"
+```
 
 ## DSGVO-Löschkonzept: RAG-Wissen von Payloads trennen
 
@@ -415,13 +472,14 @@ Die UI bietet:
 
 - Chatfenster mit Verlauf und Eingabe unten
 - Retrieval an/aus
+- Hybrid Retrieval an/aus
 - ToolRouter an/aus
 - PromptGuard an/aus
 - Cache an/aus
 - bevorzugtes Modell `auto | small | medium | large`
 - Benchmark-Modus als Request-Control
 - sichtbaren Stub-Modus
-- Antwort-Metadata: Modell, Klassifikation, Latenz, Chunks, Tools und Token-Schätzung
+- Antwort-Metadata: Modell, Klassifikation, Latenz, Chunks, Retrieval-Modus, Tools und Token-Schätzung
 - Button `Run Benchmark`, der `/bff/benchmark/run` ausführt und `latest.json` sowie `benchmark-report.md` zugänglich macht
 
 Runtime-Controls werden pro Anfrage an den Orchestrator gesendet:
@@ -434,6 +492,7 @@ Runtime-Controls werden pro Anfrage an den Orchestrator gesendet:
     "toolRouterEnabled": true,
     "promptGuardEnabled": true,
     "cacheEnabled": true,
+    "hybridRetrievalEnabled": true,
     "benchmarkMode": false
   }
 }
@@ -464,8 +523,8 @@ npm.cmd run benchmark
 Der TypeScript-Benchmark liest typische Beispielanfragen aus `data/benchmark-cases.json` und vergleicht drei Betriebsarten:
 
 - `baseline`: Prompt direkt an ein kleines LLM, ohne Retrieval und ohne Tool-Router
-- `rag`: Retrieval, Kontextreduktion und LLM-Aufruf
-- `optimized`: Klassifikation, Guard/Quality-Prüfung, Retrieval, Tool-Router und LLM-Aufruf
+- `rag`: klassische Vector Retrieval-Spur, Kontextreduktion und LLM-Aufruf
+- `optimized`: Klassifikation, Guard/Quality-Prüfung, Hybrid Retrieval, Tool-Router und LLM-Aufruf
 
 Die Ergebnisse werden reproduzierbar gespeichert:
 
@@ -780,7 +839,7 @@ Tool-Calling ist aktuell nur aktiv, wenn:
 Aktuelle Tools:
 
 - `get_stats`: liefert interne Metriken zu Tokens, Cache, Guard, Resilience und Tool-Nutzung
-- `search_knowledge`: führt eine tenant-gefilterte Knowledge-Suche über Embedding + Qdrant aus
+- `search_knowledge`: führt eine tenant-gefilterte Knowledge-Suche über Hybrid Retrieval (Qdrant Vector Search + Sparse/BM25 + Rank Fusion) aus
 
 Der Tool-Router sendet nicht den kompletten Werkzeugkasten an das LLM, sondern nur die pro Anfrage ausgewählten Tool-Definitionen:
 
