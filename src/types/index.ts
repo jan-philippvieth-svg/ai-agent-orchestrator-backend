@@ -5,12 +5,20 @@ export type SourceType = 'document' | 'note' | 'email' | 'markdown' | 'pdf_text'
 export type DocumentStatus = 'draft' | 'reviewed' | 'approved';
 export type ServiceStatus = 'ok' | 'unavailable';
 
+export interface ChatControls {
+  promptGuardEnabled?: boolean;
+  toolRouterEnabled?: boolean;
+  cacheEnabled?: boolean;
+  benchmarkMode?: boolean;
+}
+
 export interface ChatRequest {
   tenantId: string;
   userId: string;
   message: string;
   useRetrieval: boolean;
   preferredModel: PreferredModel;
+  controls?: ChatControls;
   metadata?: {
     projectId?: string;
     sourceType?: string;
@@ -41,6 +49,10 @@ export interface ChatResponse {
       calls: ToolCallMetadata[];
     };
     guard: PromptGuardMetadata;
+    controls?: ChatControls & {
+      retrievalEnabled: boolean;
+      stubMode: boolean;
+    };
     efficiency: {
       actualTokens: number;
       baselineTokens: number;

@@ -47,7 +47,19 @@ export class ChatOrchestratorService {
     }
     async run(body, options = {}) {
         const start = Date.now();
-        const guard = this.promptGuard.evaluate(body.message);
+        const controls = body.controls ?? {};
+        const promptGuardEnabled = controls.promptGuardEnabled !== false;
+        const toolRouterEnabled = controls.toolRouterEnabled !== false;
+        const cacheEnabled = controls.cacheEnabled !== false;
+        const guard = promptGuardEnabled
+            ? this.promptGuard.evaluate(body.message)
+            : {
+                allowed: true,
+                sanitizedMessage: body.message,
+                warnings: ['prompt_guard_disabled_by_request'],
+                categories: [],
+                risk: 'low',
+            };
         const guardedBody = { ...body, message: guard.sanitizedMessage };
         const classification = this.classifier.classify(guardedBody.message);
         if (!guard.allowed) {
@@ -91,6 +103,14 @@ export class ChatOrchestratorService {
                         warnings: guard.warnings,
                         reason: guard.reasonCode,
                     },
+                    controls: {
+                        ...controls,
+                        retrievalEnabled: false,
+                        promptGuardEnabled,
+                        toolRouterEnabled,
+                        cacheEnabled,
+                        stubMode: config.stubExternalServices,
+                    },
                     cache: {
                         hit: false,
                         eligible: false,
@@ -120,6 +140,7 @@ export class ChatOrchestratorService {
                 config.security.largeModelAllowedApiKeys.includes(options.providedApiKey));
         const selectedModel = this.router.selectModel(classification, guardedBody.preferredModel, { allowLargeModelOverride });
         const cacheEligible = config.cache.enabled &&
+            cacheEnabled &&
             classification === 'simple' &&
             !guardedBody.useRetrieval &&
             selectedModel === 'small' &&
@@ -164,6 +185,14 @@ export class ChatOrchestratorService {
                         cache: {
                             hit: true,
                             eligible: true,
+                        },
+                        controls: {
+                            ...controls,
+                            retrievalEnabled: guardedBody.useRetrieval,
+                            promptGuardEnabled,
+                            toolRouterEnabled,
+                            cacheEnabled,
+                            stubMode: config.stubExternalServices,
                         },
                     },
                 };
@@ -212,11 +241,13 @@ export class ChatOrchestratorService {
                 });
             }
         }
-        const toolRouting = this.toolRouter.route({
-            request: guardedBody,
-            classification,
-            selectedModel,
-        });
+        const toolRouting = toolRouterEnabled
+            ? this.toolRouter.route({
+                request: guardedBody,
+                classification,
+                selectedModel,
+            })
+            : { enabled: false, selected: [] };
         const toolResults = await this.tools.executeForChat(guardedBody, toolRouting.selected.map((tool) => tool.name));
         const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
         warnings.push(...toolWarnings);
@@ -298,6 +329,16 @@ export class ChatOrchestratorService {
                 },
                 guard: {
                     blocked: false,
+                    status: promptGuardEnabled ? 'allowed' : undefined,
+                    warnings: promptGuardEnabled ? undefined : guard.warnings,
+                },
+                controls: {
+                    ...controls,
+                    retrievalEnabled: guardedBody.useRetrieval,
+                    promptGuardEnabled,
+                    toolRouterEnabled,
+                    cacheEnabled,
+                    stubMode: config.stubExternalServices,
                 },
                 efficiency: {
                     actualTokens: efficiency.actualTokens,

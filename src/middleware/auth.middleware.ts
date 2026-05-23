@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
 
 export async function apiKeyAuth(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-  if (request.url.startsWith('/bff')) {
+  if (request.url.startsWith('/bff') || request.url.startsWith('/ui') || request.url === '/favicon.ico') {
     return;
   }
 

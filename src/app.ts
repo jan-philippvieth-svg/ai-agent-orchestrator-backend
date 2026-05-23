@@ -17,6 +17,7 @@ import { insightsRoutes } from './routes/insights.routes.js';
 import { metricsRoutes } from './routes/metrics.routes.js';
 import { modelsRoutes } from './routes/models.routes.js';
 import { searchRoutes } from './routes/search.routes.js';
+import { uiRoutes } from './routes/ui.routes.js';
 
 export async function buildApp() {
   const app = fastify({
@@ -80,6 +81,7 @@ export async function buildApp() {
   await app.register(searchRoutes);
   await app.register(modelsRoutes);
   await app.register(metricsRoutes);
+  await app.register(uiRoutes);
 
   return app;
 }

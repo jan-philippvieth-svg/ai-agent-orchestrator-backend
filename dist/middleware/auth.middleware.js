@@ -1,6 +1,6 @@
 import { config } from '../config.js';
 export async function apiKeyAuth(request, reply) {
-    if (request.url.startsWith('/bff')) {
+    if (request.url.startsWith('/bff') || request.url.startsWith('/ui') || request.url === '/favicon.ico') {
         return;
     }
     const apiKey = request.headers['x-api-key'];

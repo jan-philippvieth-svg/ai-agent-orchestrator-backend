@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Agent Orchestrator Cockpit</title>
+    <link rel="stylesheet" href="/ui/app.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>AI Agent Orchestrator</h1>
+          <p>Internes Test-Cockpit für Routing, Retrieval, Guard, Cache und Tools.</p>
+        </div>
+        <div class="status-strip">
+          <span id="sessionStatus" class="status muted">Session fehlt</span>
+          <span id="stubStatus" class="status muted">Stub-Modus wird geladen</span>
+        </div>
+      </header>
+
+      <section class="login-panel" aria-label="BFF Session">
+        <label>
+          Tenant
+          <input id="tenantId" value="tenant-1" autocomplete="off" />
+        </label>
+        <label>
+          User
+          <input id="userId" value="ui-user" autocomplete="off" />
+        </label>
+        <label>
+          BFF Login Key
+          <input id="loginKey" type="password" autocomplete="off" placeholder="dev-bff-login" />
+        </label>
+        <button id="sessionButton" type="button">Session starten</button>
+      </section>
+
+      <section class="controls" aria-label="Chat Controls">
+        <label class="switch">
+          <input id="useRetrieval" type="checkbox" checked />
+          <span>Retrieval</span>
+        </label>
+        <label class="switch">
+          <input id="toolRouterEnabled" type="checkbox" checked />
+          <span>ToolRouter</span>
+        </label>
+        <label class="switch">
+          <input id="promptGuardEnabled" type="checkbox" checked />
+          <span>PromptGuard</span>
+        </label>
+        <label class="switch">
+          <input id="cacheEnabled" type="checkbox" checked />
+          <span>Cache</span>
+        </label>
+        <label class="switch">
+          <input id="benchmarkMode" type="checkbox" />
+          <span>Benchmark-Modus</span>
+        </label>
+        <label class="select-control">
+          Modell
+          <select id="preferredModel">
+            <option value="auto">auto</option>
+            <option value="small">small</option>
+            <option value="medium">medium</option>
+            <option value="large">large</option>
+          </select>
+        </label>
+        <label class="select-control">
+          Project
+          <input id="projectId" placeholder="optional" autocomplete="off" />
+        </label>
+        <label class="select-control">
+          Source
+          <input id="sourceType" placeholder="optional" autocomplete="off" />
+        </label>
+      </section>
+
+      <section class="workspace">
+        <section class="chat-surface" aria-label="Chat">
+          <div id="messages" class="messages"></div>
+          <form id="chatForm" class="composer">
+            <textarea id="messageInput" rows="3" placeholder="Frage an den Orchestrator stellen..." required></textarea>
+            <button id="sendButton" type="submit">Senden</button>
+          </form>
+        </section>
+
+        <aside class="side-panel" aria-label="Benchmark und letzte Antwort">
+          <section>
+            <div class="section-heading">
+              <h2>Letzte Antwort</h2>
+            </div>
+            <dl id="metadata" class="metadata">
+              <div><dt>Modell</dt><dd>-</dd></div>
+              <div><dt>Klassifikation</dt><dd>-</dd></div>
+              <div><dt>Latenz</dt><dd>-</dd></div>
+              <div><dt>Chunks</dt><dd>-</dd></div>
+              <div><dt>Tools</dt><dd>-</dd></div>
+              <div><dt>Tokens</dt><dd>-</dd></div>
+            </dl>
+          </section>
+
+          <section>
+            <div class="section-heading">
+              <h2>Benchmark</h2>
+              <button id="benchmarkButton" type="button">Run Benchmark</button>
+            </div>
+            <div id="benchmarkStatus" class="benchmark-status">Noch kein Lauf in dieser Session.</div>
+            <div class="report-actions">
+              <button id="loadLatestButton" type="button">latest.json laden</button>
+              <a href="/bff/benchmark/report" target="_blank" rel="noreferrer">benchmark-report.md öffnen</a>
+            </div>
+            <pre id="benchmarkOutput" class="report-output"></pre>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/ui/app.js" type="module"></script>
+  </body>
+</html>

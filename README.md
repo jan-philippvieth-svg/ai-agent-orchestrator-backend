@@ -289,6 +289,57 @@ openssl rand -hex 32
 
 Im Dev kann `BFF_COOKIE_SECURE=false` bleiben. Sobald HTTPS davor liegt, sollte `BFF_COOKIE_SECURE=true` gesetzt werden.
 
+## Interne Web-UI
+
+Das Backend enthält ein minimalistisches internes Test-Cockpit unter:
+
+```text
+http://localhost:3001/ui
+```
+
+Die UI ist kein Kundenprodukt, sondern eine lokale Experimentierfläche für Modellwahl, Retrieval, ToolRouter, PromptGuard, Cache und Benchmark-Läufe. Sie nutzt die bestehende BFF-Schicht und ruft `/bff/chat` auf, damit kein API-Key im Frontend hardcodiert oder im Browser Storage abgelegt werden muss.
+
+Start:
+
+```bash
+npm.cmd run build
+npm.cmd start
+```
+
+Dann im Browser `/ui` öffnen und eine BFF-Session starten mit:
+
+- `tenantId`
+- `userId`
+- `BFF_DEV_LOGIN_KEY` aus der lokalen `.env`
+
+Die UI bietet:
+
+- Chatfenster mit Verlauf und Eingabe unten
+- Retrieval an/aus
+- ToolRouter an/aus
+- PromptGuard an/aus
+- Cache an/aus
+- bevorzugtes Modell `auto | small | medium | large`
+- Benchmark-Modus als Request-Control
+- sichtbaren Stub-Modus
+- Antwort-Metadata: Modell, Klassifikation, Latenz, Chunks, Tools und Token-Schätzung
+- Button `Run Benchmark`, der `/bff/benchmark/run` ausführt und `latest.json` sowie `benchmark-report.md` zugänglich macht
+
+Runtime-Controls werden pro Anfrage an den Orchestrator gesendet:
+
+```json
+{
+  "useRetrieval": true,
+  "preferredModel": "auto",
+  "controls": {
+    "toolRouterEnabled": true,
+    "promptGuardEnabled": true,
+    "cacheEnabled": true,
+    "benchmarkMode": false
+  }
+}
+```
+
 ## Setup
 
 Windows/PowerShell:
