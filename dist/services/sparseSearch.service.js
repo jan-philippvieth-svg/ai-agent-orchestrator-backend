@@ -28,7 +28,8 @@ export class SparseSearchService {
             .filter((record) => record.metadata.approvedForRetrieval || record.metadata.status === 'approved')
             .filter((record) => !request.projectId || record.metadata.projectId === request.projectId)
             .filter((record) => !request.sourceType || record.metadata.sourceType === request.sourceType)
-            .filter((record) => !request.status || record.metadata.status === request.status);
+            .filter((record) => !request.status || record.metadata.status === request.status)
+            .filter((record) => !request.tags?.length || request.tags.some((tag) => record.metadata.tags.includes(tag)));
         const queryTerms = [...new Set(this.tokenize(request.query))];
         if (queryTerms.length === 0 || records.length === 0)
             return [];

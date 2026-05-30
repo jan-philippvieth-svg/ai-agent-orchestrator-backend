@@ -6,6 +6,7 @@ export const searchRequestSchema = z.object({
   projectId: z.string().min(1).max(200).optional(),
   sourceType: z.string().min(1).max(80).optional(),
   status: z.enum(['draft', 'reviewed', 'approved']).optional(),
+  tags: z.array(z.string().min(1).max(80)).max(20).optional(),
   limit: z.number().int().min(1).max(20).default(5),
   useHybridRetrieval: z.boolean().optional(),
 });

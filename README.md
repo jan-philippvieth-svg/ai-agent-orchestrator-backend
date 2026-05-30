@@ -15,7 +15,8 @@ flowchart TD
   User["User / Agent"] --> API["Fastify API / BFF"]
   API --> Guard["Prompt Guard + Input Validation"]
   Guard --> Classifier["Request Classification"]
-  Classifier --> Retrieval{"Retrieval nötig?"}
+  Classifier --> Anchors["Semantic Anchor Resolver"]
+  Anchors --> Retrieval{"Retrieval nötig?"}
   Retrieval -- ja --> Embed["Embedding Service"]
   Embed --> VectorSearch["Vector Search: Qdrant mit tenantId-Filter"]
   Retrieval -- ja --> SparseSearch["Sparse/BM25 Search mit Privacy-Filtern"]
@@ -43,6 +44,7 @@ User Request
 -> API Backend
 -> Prompt Guard und Input Sanitization
 -> Request Classification
+-> Semantic Anchor Lookup fuer Tool- und Retrieval-Hints
 -> optional Hybrid Retrieval: Qdrant + Sparse/BM25 + Rank Fusion
 -> Context Reduction
 -> Model Routing
@@ -119,6 +121,102 @@ Für Chat-Anfragen gilt:
 useRetrieval=false -> retrievalMode: "disabled"
 useRetrieval=true + hybridRetrievalEnabled=false -> retrievalMode: "vector"
 useRetrieval=true + hybridRetrievalEnabled=true -> retrievalMode: "hybrid"
+```
+
+## Semantic Anchor Layer
+
+Semantic Anchors sind kuratierte Kontext-Schlüssel zwischen Klassifikation, ToolRouter und Retrieval. Sie machen aus einer Anfrage keinen neuen Wissensspeicher, sondern geben dem Orchestrator nachvollziehbare Hinweise:
+
+```text
+Prompt
+-> Anchor Resolver
+-> approved Anchor aus data/anchors.json
+-> Tool-Hints + Qdrant/Sparse-Filter
+-> reduzierter Kontext ans LLM
+```
+
+Die Anchor Registry liegt im Prototyp bewusst als einfache JSON-Datei unter `data/anchors.json`. Dadurch ist sie versionierbar, reviewbar und für interne Tests ohne zusätzliche Datenbank lauffähig. Später kann dieselbe Struktur in SQLite, Postgres oder eine interne Governance-DB wandern.
+
+Ein Anchor ist bewusst kein Chunk und kein freier Agent-Speicher:
+
+```json
+{
+  "anchorKey": "docker.production.deploy",
+  "description": "Docker Compose, VPS/Strato Deployment, Reverse Proxy und Healthchecks.",
+  "keywords": ["docker", "compose", "deployment", "vps", "strato"],
+  "qdrantFilters": {
+    "projectId": "deployment",
+    "sourceType": "markdown",
+    "tags": ["docker", "deployment", "vps"]
+  },
+  "preferredTools": ["search_knowledge"],
+  "preferredModel": "medium",
+  "status": "approved",
+  "source": "public_seed",
+  "externalRefs": [
+    {
+      "type": "github_topic",
+      "id": "docker",
+      "url": "https://github.com/topics/docker"
+    }
+  ]
+}
+```
+
+Governance-Regeln:
+
+- nur `approved` Anchors beeinflussen Retrieval und ToolRouter
+- Public-Seed-Referenzen dürfen vorschlagen, aber nicht automatisch produktiv routen
+- explizite Request-Filter wie `projectId` und `sourceType` werden nicht durch Anchors überschrieben
+- Anchors geben Kontext- und Tool-Hints, sie überschreiben nicht heimlich die Modellroute
+- wenn kein Anchor passt, kann die Metadata einen `suggestedKey` anzeigen, aber dieser wird nicht automatisch aktiv
+
+Aktuell enthaltene Beispiel-Anker:
+
+- `ai.orchestrator.security`
+- `rag.retrieval.hybrid`
+- `docker.production.deploy`
+- `macstudio.local.llm.routing`
+
+Konfiguration:
+
+```env
+SEMANTIC_ANCHORS_ENABLED=true
+SEMANTIC_ANCHORS_REGISTRY_PATH=data/anchors.json
+SEMANTIC_ANCHORS_MIN_SCORE=2
+SEMANTIC_ANCHORS_MAX_CANDIDATES=3
+```
+
+Pro Chat Request kann die Schicht deaktiviert werden:
+
+```json
+{
+  "controls": {
+    "semanticAnchorsEnabled": false
+  }
+}
+```
+
+Im internen Cockpit gibt es dafür den Schalter `Semantic Anchors`. Die rechte Metadata-Spalte zeigt den ausgewählten Anchor oder einen Vorschlag an. So kann man schnell prüfen, ob die Anfrage in den erwarteten Bedeutungsraum geroutet wurde.
+
+Die Chat-Metadata zeigt Match, Kandidaten, angewendete Filter und Vorschläge:
+
+```json
+{
+  "anchors": {
+    "enabled": true,
+    "matched": true,
+    "selected": {
+      "anchorKey": "rag.retrieval.hybrid",
+      "score": 6,
+      "matchedKeywords": ["rag", "qdrant", "bm25"]
+    },
+    "appliedFilters": {
+      "projectId": "agent-orchestrator",
+      "tags": ["rag", "retrieval", "qdrant"]
+    }
+  }
+}
 ```
 
 ## DSGVO-Löschkonzept: RAG-Wissen von Payloads trennen
@@ -473,6 +571,7 @@ Die UI bietet:
 - Chatfenster mit Verlauf und Eingabe unten
 - Retrieval an/aus
 - Hybrid Retrieval an/aus
+- Semantic Anchors an/aus
 - ToolRouter an/aus
 - PromptGuard an/aus
 - Cache an/aus
@@ -493,6 +592,7 @@ Runtime-Controls werden pro Anfrage an den Orchestrator gesendet:
     "promptGuardEnabled": true,
     "cacheEnabled": true,
     "hybridRetrievalEnabled": true,
+    "semanticAnchorsEnabled": true,
     "benchmarkMode": false
   }
 }

@@ -15,6 +15,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY web ./web
+COPY data/anchors.json ./data/anchors.json
 COPY .env.example ./.env.example
 RUN mkdir -p data reports && chown -R node:node /app
 

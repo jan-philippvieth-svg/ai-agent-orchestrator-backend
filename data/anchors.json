@@ -1,0 +1,96 @@
+{
+  "anchors": [
+    {
+      "anchorKey": "ai.orchestrator.security",
+      "title": "AI Orchestrator Security",
+      "description": "BFF, Sessions, CSRF, Prompt Guard, Rate Limits, Tenant-Isolation und Audit-Logging.",
+      "keywords": ["security", "sicherheit", "bff", "csrf", "session", "tenant", "api-key", "promptguard", "prompt guard", "rate limit", "audit"],
+      "qdrantFilters": {
+        "projectId": "agent-orchestrator",
+        "sourceType": "markdown",
+        "tags": ["security", "bff", "tenant"]
+      },
+      "preferredTools": ["search_knowledge", "get_stats"],
+      "preferredModel": "medium",
+      "priority": "high",
+      "status": "approved",
+      "source": "internal",
+      "externalRefs": [
+        {
+          "type": "owasp",
+          "id": "api-security",
+          "url": "https://owasp.org/www-project-api-security/"
+        }
+      ]
+    },
+    {
+      "anchorKey": "rag.retrieval.hybrid",
+      "title": "Hybrid RAG Retrieval",
+      "description": "Qdrant, Embeddings, Sparse/BM25 Search, Rank Fusion, Chunks und Context Reduction.",
+      "keywords": ["rag", "qdrant", "retrieval", "embedding", "embeddings", "bm25", "sparse", "rank fusion", "rrf", "chunk", "chunks", "context"],
+      "qdrantFilters": {
+        "projectId": "agent-orchestrator",
+        "sourceType": "markdown",
+        "tags": ["rag", "retrieval", "qdrant"]
+      },
+      "preferredTools": ["search_knowledge"],
+      "preferredModel": "medium",
+      "priority": "high",
+      "status": "approved",
+      "source": "internal",
+      "externalRefs": [
+        {
+          "type": "github_topic",
+          "id": "qdrant",
+          "url": "https://github.com/topics/qdrant"
+        }
+      ]
+    },
+    {
+      "anchorKey": "docker.production.deploy",
+      "title": "Docker Production Deployment",
+      "description": "Docker Compose, VPS/Strato Deployment, Reverse Proxy, Healthchecks und Betriebsstart.",
+      "keywords": ["docker", "compose", "docker compose", "deployment", "deploy", "vps", "strato", "reverse proxy", "nginx", "container", "healthcheck"],
+      "qdrantFilters": {
+        "projectId": "deployment",
+        "sourceType": "markdown",
+        "tags": ["docker", "deployment", "vps"]
+      },
+      "preferredTools": ["search_knowledge"],
+      "preferredModel": "medium",
+      "priority": "medium",
+      "status": "approved",
+      "source": "public_seed",
+      "externalRefs": [
+        {
+          "type": "github_topic",
+          "id": "docker",
+          "url": "https://github.com/topics/docker"
+        }
+      ]
+    },
+    {
+      "anchorKey": "macstudio.local.llm.routing",
+      "title": "Mac Studio Local LLM Routing",
+      "description": "Lokale Modelle, small/medium/large Routing, GPU-Entlastung, Token-Effizienz und Ollama/LM Studio.",
+      "keywords": ["mac studio", "local llm", "lokale llm", "ollama", "lm studio", "mlx", "model routing", "modellwahl", "gpu", "32b", "tokens", "token-effizienz"],
+      "qdrantFilters": {
+        "projectId": "agent-orchestrator",
+        "sourceType": "markdown",
+        "tags": ["local-llm", "routing", "performance"]
+      },
+      "preferredTools": ["get_stats", "search_knowledge"],
+      "preferredModel": "medium",
+      "priority": "high",
+      "status": "approved",
+      "source": "internal",
+      "externalRefs": [
+        {
+          "type": "github_topic",
+          "id": "ollama",
+          "url": "https://github.com/topics/ollama"
+        }
+      ]
+    }
+  ]
+}

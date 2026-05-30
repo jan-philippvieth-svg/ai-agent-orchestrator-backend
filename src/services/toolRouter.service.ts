@@ -1,10 +1,11 @@
 import { config } from '../config.js';
-import type { ChatRequest, Classification, ModelSize, ToolDefinition, ToolSelection } from '../types/index.js';
+import type { AnchorResolution, ChatRequest, Classification, ModelSize, ToolDefinition, ToolSelection } from '../types/index.js';
 
 interface ToolRouterContext {
   request: ChatRequest;
   classification: Classification;
   selectedModel: ModelSize;
+  anchors?: AnchorResolution;
 }
 
 export class ToolRouterService {
@@ -29,6 +30,13 @@ export class ToolRouterService {
     const message = context.request.message;
     const selected: ToolSelection[] = [];
 
+    for (const toolName of context.anchors?.selected?.preferredTools ?? []) {
+      selected.push({
+        ...this.definition(toolName),
+        reason: `Semantic anchor ${context.anchors?.selected?.anchorKey} recommends this tool.`,
+      });
+    }
+
     if (/\b(stats|metrics|metriken|einspar|tokens|fallback|cache|guard|resilience|benchmark|dashboard|performance)\b/i.test(message)) {
       selected.push({
         ...this.definition('get_stats'),
@@ -46,12 +54,20 @@ export class ToolRouterService {
       });
     }
 
-    return { enabled: true, selected };
+    return { enabled: true, selected: this.dedupe(selected) };
   }
 
   private definition(name: ToolDefinition['name']): ToolDefinition {
     const definition = this.definitions.find((item) => item.name === name);
     if (!definition) throw new Error(`Unknown tool definition: ${name}`);
     return definition;
+  }
+
+  private dedupe(items: ToolSelection[]): ToolSelection[] {
+    const byName = new Map<ToolSelection['name'], ToolSelection>();
+    for (const item of items) {
+      if (!byName.has(item.name)) byName.set(item.name, item);
+    }
+    return [...byName.values()];
   }
 }

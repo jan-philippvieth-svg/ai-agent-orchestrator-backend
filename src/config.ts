@@ -57,6 +57,12 @@ export const config = {
     sparseLimit: readNumber('SPARSE_SEARCH_LIMIT', 8),
     rankFusionK: readNumber('RANK_FUSION_K', 60),
   },
+  anchors: {
+    enabled: readBoolean('SEMANTIC_ANCHORS_ENABLED', true),
+    registryPath: process.env.SEMANTIC_ANCHORS_REGISTRY_PATH ?? 'data/anchors.json',
+    minScore: readNumber('SEMANTIC_ANCHORS_MIN_SCORE', 2),
+    maxCandidates: readNumber('SEMANTIC_ANCHORS_MAX_CANDIDATES', 3),
+  },
   cors: {
     allowedOrigins: readList('CORS_ALLOWED_ORIGINS'),
   },

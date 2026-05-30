@@ -16,6 +16,7 @@ export async function uiRoutes(app) {
         toolCallingEnabled: config.tools.enabled,
         cacheEnabled: config.cache.enabled,
         hybridRetrievalEnabled: config.retrieval.hybridEnabled,
+        semanticAnchorsEnabled: config.anchors.enabled,
         sparseSearchEnabled: config.retrieval.sparseEnabled,
         rankFusionK: config.retrieval.rankFusionK,
         benchmark: {

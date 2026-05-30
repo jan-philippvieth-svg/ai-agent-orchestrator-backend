@@ -314,6 +314,15 @@ async function run() {
   assert(complexChat.body.metadata.classification === 'complex', 'Expected architecture chat to classify as complex');
   assert(complexChat.body.metadata.selectedModel === 'large', 'Expected complex request to route to large model');
   assert(complexChat.body.metadata.chunksUsed >= 1, 'Expected complex chat to use retrieved chunks');
+  assert(complexChat.body.metadata.anchors?.matched === true, 'Expected semantic anchor to match complex RAG chat');
+  assert(
+    complexChat.body.metadata.anchors.selected.anchorKey === 'macstudio.local.llm.routing',
+    'Expected semantic anchor metadata to expose selected anchor key',
+  );
+  assert(
+    complexChat.body.metadata.controls.semanticAnchorsEnabled === true,
+    'Expected semantic anchor control metadata to be enabled by default',
+  );
 
   const metrics = await textRequest('/metrics');
   assert(metrics.status === 200, 'Expected metrics to succeed');

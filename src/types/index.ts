@@ -6,6 +6,8 @@ export type DocumentStatus = 'draft' | 'reviewed' | 'approved';
 export type ServiceStatus = 'ok' | 'unavailable';
 export type PrivacyClass = 'public_internal' | 'internal' | 'confidential' | 'personal_reference';
 export type DeletionBehavior = 'keep_if_pii_free' | 'delete_payload_only' | 'delete_chunk_if_pii';
+export type AnchorPriority = 'low' | 'medium' | 'high';
+export type AnchorStatus = 'suggested' | 'approved' | 'disabled';
 
 export interface ChatControls {
   promptGuardEnabled?: boolean;
@@ -13,6 +15,7 @@ export interface ChatControls {
   cacheEnabled?: boolean;
   benchmarkMode?: boolean;
   hybridRetrievalEnabled?: boolean;
+  semanticAnchorsEnabled?: boolean;
 }
 
 export interface ChatRequest {
@@ -26,6 +29,60 @@ export interface ChatRequest {
     projectId?: string;
     sourceType?: string;
   };
+}
+
+export interface AnchorFilters {
+  projectId?: string;
+  sourceType?: string;
+  status?: DocumentStatus;
+  tags?: string[];
+}
+
+export interface AnchorExternalRef {
+  type: 'github_topic' | 'wikidata' | 'dbpedia' | 'owasp' | 'cncf' | 'internal_doc' | 'other';
+  id: string;
+  url?: string;
+}
+
+export interface SemanticAnchor {
+  anchorKey: string;
+  title: string;
+  description: string;
+  keywords: string[];
+  qdrantFilters: AnchorFilters;
+  preferredTools: ToolName[];
+  preferredModel?: ModelSize;
+  priority: AnchorPriority;
+  status: AnchorStatus;
+  source: 'internal' | 'public_seed';
+  externalRefs: AnchorExternalRef[];
+}
+
+export interface AnchorMatch {
+  anchorKey: string;
+  title: string;
+  score: number;
+  priority: AnchorPriority;
+  matchedKeywords: string[];
+  qdrantFilters: AnchorFilters;
+  preferredTools: ToolName[];
+  preferredModel?: ModelSize;
+}
+
+export interface AnchorSuggestion {
+  suggestedKey: string;
+  reason: string;
+  matchedTerms: string[];
+  status: 'suggested';
+}
+
+export interface AnchorResolution {
+  enabled: boolean;
+  matched: boolean;
+  selected?: AnchorMatch;
+  candidates: AnchorMatch[];
+  appliedFilters: AnchorFilters;
+  suggestion?: AnchorSuggestion;
 }
 
 export interface ChatResponse {
@@ -55,8 +112,10 @@ export interface ChatResponse {
     controls?: ChatControls & {
       retrievalEnabled: boolean;
       hybridRetrievalEnabled: boolean;
+      semanticAnchorsEnabled: boolean;
       stubMode: boolean;
     };
+    anchors?: AnchorResolution;
     retrievalMode?: 'disabled' | 'vector' | 'hybrid';
     retrievalDiagnostics?: {
       vectorResults: number;
@@ -115,6 +174,7 @@ export interface SearchRequest {
   projectId?: string;
   sourceType?: string;
   status?: DocumentStatus;
+  tags?: string[];
   limit: number;
   useHybridRetrieval?: boolean;
 }

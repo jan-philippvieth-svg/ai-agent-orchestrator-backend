@@ -137,7 +137,7 @@ h2 {
 }
 
 .controls {
-  grid-template-columns: repeat(6, minmax(120px, auto)) repeat(3, minmax(130px, 1fr));
+  grid-template-columns: repeat(7, minmax(120px, auto)) repeat(3, minmax(130px, 1fr));
 }
 
 label {

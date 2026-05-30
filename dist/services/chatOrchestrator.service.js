@@ -1,5 +1,6 @@
 import { config } from '../config.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
+import { AnchorResolverService } from './anchorResolver.service.js';
 import { CacheService } from './cache.service.js';
 import { ClassifierService } from './classifier.service.js';
 import { EfficiencyEstimatorService } from './efficiencyEstimator.service.js';
@@ -27,7 +28,8 @@ export class ChatOrchestratorService {
     cache;
     tools;
     toolRouter;
-    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), retrieval = new RetrievalService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService()) {
+    anchors;
+    constructor(classifier = new ClassifierService(), router = new ModelRouterService(), retrieval = new RetrievalService(), prompts = new PromptBuilderService(), llm = new LlmService(), logging = new LoggingService(), metrics = MetricsService.getInstance(), efficiency = new EfficiencyEstimatorService(), insights = new UserInsightService(), promptGuard = new PromptGuardService(), cache = CacheService.getInstance(), tools = new ToolRegistryService(), toolRouter = new ToolRouterService(), anchors = new AnchorResolverService()) {
         this.classifier = classifier;
         this.router = router;
         this.retrieval = retrieval;
@@ -41,6 +43,7 @@ export class ChatOrchestratorService {
         this.cache = cache;
         this.tools = tools;
         this.toolRouter = toolRouter;
+        this.anchors = anchors;
     }
     async run(body, options = {}) {
         const start = Date.now();
@@ -49,6 +52,7 @@ export class ChatOrchestratorService {
         const toolRouterEnabled = controls.toolRouterEnabled !== false;
         const cacheEnabled = controls.cacheEnabled !== false;
         const hybridRetrievalEnabled = controls.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled;
+        const semanticAnchorsEnabled = controls.semanticAnchorsEnabled ?? config.anchors.enabled;
         const guard = promptGuardEnabled
             ? this.promptGuard.evaluate(body.message)
             : {
@@ -108,6 +112,7 @@ export class ChatOrchestratorService {
                         toolRouterEnabled,
                         cacheEnabled,
                         hybridRetrievalEnabled,
+                        semanticAnchorsEnabled,
                         stubMode: config.stubExternalServices,
                     },
                     cache: {
@@ -137,6 +142,7 @@ export class ChatOrchestratorService {
             config.security.largeModelAllowedUsers.includes(guardedBody.userId) ||
             (typeof options.providedApiKey === 'string' &&
                 config.security.largeModelAllowedApiKeys.includes(options.providedApiKey));
+        const anchorResolution = await this.anchors.resolve(guardedBody, semanticAnchorsEnabled);
         const selectedModel = this.router.selectModel(classification, guardedBody.preferredModel, { allowLargeModelOverride });
         const cacheEligible = config.cache.enabled &&
             cacheEnabled &&
@@ -192,8 +198,10 @@ export class ChatOrchestratorService {
                             toolRouterEnabled,
                             cacheEnabled,
                             hybridRetrievalEnabled,
+                            semanticAnchorsEnabled,
                             stubMode: config.stubExternalServices,
                         },
+                        anchors: anchorResolution,
                     },
                 };
                 await this.insights.recordInteraction({
@@ -222,8 +230,10 @@ export class ChatOrchestratorService {
                 const searchRequest = {
                     tenantId: guardedBody.tenantId,
                     query: guardedBody.message,
-                    projectId: guardedBody.metadata?.projectId,
-                    sourceType: guardedBody.metadata?.sourceType,
+                    projectId: guardedBody.metadata?.projectId ?? anchorResolution.appliedFilters.projectId,
+                    sourceType: guardedBody.metadata?.sourceType ?? anchorResolution.appliedFilters.sourceType,
+                    status: anchorResolution.appliedFilters.status,
+                    tags: anchorResolution.appliedFilters.tags,
                     limit: config.retrieval.defaultLimit,
                     useHybridRetrieval: hybridRetrievalEnabled,
                 };
@@ -249,9 +259,10 @@ export class ChatOrchestratorService {
                 request: guardedBody,
                 classification,
                 selectedModel,
+                anchors: anchorResolution,
             })
             : { enabled: false, selected: [] };
-        const toolResults = await this.tools.executeForChat(guardedBody, toolRouting.selected.map((tool) => tool.name));
+        const toolResults = await this.tools.executeForChat(guardedBody, toolRouting.selected.map((tool) => tool.name), anchorResolution);
         const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
         warnings.push(...toolWarnings);
         const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected);
@@ -312,6 +323,7 @@ export class ChatOrchestratorService {
                     ? (retrievalResult?.mode ?? (hybridRetrievalEnabled ? 'hybrid' : 'vector'))
                     : 'disabled',
                 retrievalDiagnostics: guardedBody.useRetrieval ? retrievalResult?.diagnostics : undefined,
+                anchors: anchorResolution,
                 chunksUsed: chunks.length,
                 processingTimeMs,
                 warnings: warnings.length > 0 ? warnings : undefined,
@@ -346,6 +358,7 @@ export class ChatOrchestratorService {
                     toolRouterEnabled,
                     cacheEnabled,
                     hybridRetrievalEnabled,
+                    semanticAnchorsEnabled,
                     stubMode: config.stubExternalServices,
                 },
                 efficiency: {

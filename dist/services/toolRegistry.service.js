@@ -9,12 +9,12 @@ export class ToolRegistryService {
         this.retrieval = retrieval;
         this.metrics = metrics;
     }
-    async executeForChat(request, selectedTools) {
+    async executeForChat(request, selectedTools, anchors) {
         if (!config.tools.enabled || selectedTools.length === 0)
             return [];
         const results = [];
         for (const toolName of selectedTools) {
-            const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(request);
+            const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(request, anchors);
             this.metrics.recordTool({
                 name: result.name,
                 status: result.status,
@@ -53,14 +53,16 @@ export class ToolRegistryService {
             return this.toolError('get_stats', start, error);
         }
     }
-    async searchKnowledge(request) {
+    async searchKnowledge(request, anchors) {
         const start = Date.now();
         try {
             const searchRequest = {
                 tenantId: request.tenantId,
                 query: request.message,
-                projectId: request.metadata?.projectId,
-                sourceType: request.metadata?.sourceType,
+                projectId: request.metadata?.projectId ?? anchors?.appliedFilters.projectId,
+                sourceType: request.metadata?.sourceType ?? anchors?.appliedFilters.sourceType,
+                status: anchors?.appliedFilters.status,
+                tags: anchors?.appliedFilters.tags,
                 limit: config.tools.searchLimit,
                 useHybridRetrieval: request.controls?.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled,
             };

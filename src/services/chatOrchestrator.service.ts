@@ -1,6 +1,7 @@
 import { config } from '../config.js';
 import type { ChatRequest, ChatResponse, SearchRequest, SearchResult } from '../types/index.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
+import { AnchorResolverService } from './anchorResolver.service.js';
 import { CacheService } from './cache.service.js';
 import { ClassifierService } from './classifier.service.js';
 import { EfficiencyEstimatorService } from './efficiencyEstimator.service.js';
@@ -36,6 +37,7 @@ export class ChatOrchestratorService {
     private readonly cache = CacheService.getInstance(),
     private readonly tools = new ToolRegistryService(),
     private readonly toolRouter = new ToolRouterService(),
+    private readonly anchors = new AnchorResolverService(),
   ) {}
 
   async run(body: ChatRequest, options: ChatOrchestratorOptions = {}): Promise<ChatResponse> {
@@ -45,6 +47,7 @@ export class ChatOrchestratorService {
     const toolRouterEnabled = controls.toolRouterEnabled !== false;
     const cacheEnabled = controls.cacheEnabled !== false;
     const hybridRetrievalEnabled = controls.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled;
+    const semanticAnchorsEnabled = controls.semanticAnchorsEnabled ?? config.anchors.enabled;
     const guard = promptGuardEnabled
       ? this.promptGuard.evaluate(body.message)
       : {
@@ -108,6 +111,7 @@ export class ChatOrchestratorService {
             toolRouterEnabled,
             cacheEnabled,
             hybridRetrievalEnabled,
+            semanticAnchorsEnabled,
             stubMode: config.stubExternalServices,
           },
           cache: {
@@ -139,6 +143,7 @@ export class ChatOrchestratorService {
       config.security.largeModelAllowedUsers.includes(guardedBody.userId) ||
       (typeof options.providedApiKey === 'string' &&
         config.security.largeModelAllowedApiKeys.includes(options.providedApiKey));
+    const anchorResolution = await this.anchors.resolve(guardedBody, semanticAnchorsEnabled);
     const selectedModel = this.router.selectModel(classification, guardedBody.preferredModel, { allowLargeModelOverride });
     const cacheEligible =
       config.cache.enabled &&
@@ -198,8 +203,10 @@ export class ChatOrchestratorService {
               toolRouterEnabled,
               cacheEnabled,
               hybridRetrievalEnabled,
+              semanticAnchorsEnabled,
               stubMode: config.stubExternalServices,
             },
+            anchors: anchorResolution,
           },
         };
 
@@ -232,8 +239,10 @@ export class ChatOrchestratorService {
         const searchRequest: SearchRequest = {
           tenantId: guardedBody.tenantId,
           query: guardedBody.message,
-          projectId: guardedBody.metadata?.projectId,
-          sourceType: guardedBody.metadata?.sourceType,
+          projectId: guardedBody.metadata?.projectId ?? anchorResolution.appliedFilters.projectId,
+          sourceType: guardedBody.metadata?.sourceType ?? anchorResolution.appliedFilters.sourceType,
+          status: anchorResolution.appliedFilters.status,
+          tags: anchorResolution.appliedFilters.tags,
           limit: config.retrieval.defaultLimit,
           useHybridRetrieval: hybridRetrievalEnabled,
         };
@@ -259,11 +268,13 @@ export class ChatOrchestratorService {
           request: guardedBody,
           classification,
           selectedModel,
+          anchors: anchorResolution,
         })
       : { enabled: false, selected: [] };
     const toolResults = await this.tools.executeForChat(
       guardedBody,
       toolRouting.selected.map((tool) => tool.name),
+      anchorResolution,
     );
     const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
     warnings.push(...toolWarnings);
@@ -329,6 +340,7 @@ export class ChatOrchestratorService {
           ? (retrievalResult?.mode ?? (hybridRetrievalEnabled ? 'hybrid' : 'vector'))
           : 'disabled',
         retrievalDiagnostics: guardedBody.useRetrieval ? retrievalResult?.diagnostics : undefined,
+        anchors: anchorResolution,
         chunksUsed: chunks.length,
         processingTimeMs,
         warnings: warnings.length > 0 ? warnings : undefined,
@@ -363,6 +375,7 @@ export class ChatOrchestratorService {
           toolRouterEnabled,
           cacheEnabled,
           hybridRetrievalEnabled,
+          semanticAnchorsEnabled,
           stubMode: config.stubExternalServices,
         },
         efficiency: {

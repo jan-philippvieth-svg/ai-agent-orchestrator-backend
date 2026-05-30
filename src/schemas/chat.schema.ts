@@ -13,6 +13,7 @@ export const chatRequestSchema = z.object({
       cacheEnabled: z.boolean().optional(),
       benchmarkMode: z.boolean().optional(),
       hybridRetrievalEnabled: z.boolean().optional(),
+      semanticAnchorsEnabled: z.boolean().optional(),
     })
     .strict()
     .optional(),

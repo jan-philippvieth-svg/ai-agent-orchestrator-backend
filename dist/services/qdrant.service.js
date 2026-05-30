@@ -60,6 +60,8 @@ export class QdrantService {
             must.push({ key: 'metadata.sourceType', match: { value: request.sourceType } });
         if (request.status)
             must.push({ key: 'metadata.status', match: { value: request.status } });
+        if (request.tags?.length)
+            must.push({ key: 'metadata.tags', match: { any: request.tags } });
         const response = await this.resilience.run('qdrant:search', (signal) => fetch(`${config.qdrant.url}/collections/${config.qdrant.collection}/points/search`, {
             method: 'POST',
             headers: this.headers(),
@@ -170,6 +172,7 @@ export class QdrantService {
             .filter((chunk) => !request.projectId || chunk.metadata.projectId === request.projectId)
             .filter((chunk) => !request.sourceType || chunk.metadata.sourceType === request.sourceType)
             .filter((chunk) => !request.status || chunk.metadata.status === request.status)
+            .filter((chunk) => !request.tags?.length || request.tags.some((tag) => chunk.metadata.tags.includes(tag)))
             .map((chunk) => ({
             text: chunk.text,
             score: this.keywordScore(request.query, chunk.text),

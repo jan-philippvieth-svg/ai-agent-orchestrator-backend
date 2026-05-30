@@ -1,5 +1,5 @@
 import { config } from '../config.js';
-import type { ChatRequest, SearchRequest, ToolCallResult, ToolName } from '../types/index.js';
+import type { AnchorResolution, ChatRequest, SearchRequest, ToolCallResult, ToolName } from '../types/index.js';
 import { MetricsService } from './metrics.service.js';
 import { RetrievalService } from './retrieval.service.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
@@ -10,13 +10,13 @@ export class ToolRegistryService {
     private readonly metrics = MetricsService.getInstance(),
   ) {}
 
-  async executeForChat(request: ChatRequest, selectedTools: ToolName[]): Promise<ToolCallResult[]> {
+  async executeForChat(request: ChatRequest, selectedTools: ToolName[], anchors?: AnchorResolution): Promise<ToolCallResult[]> {
     if (!config.tools.enabled || selectedTools.length === 0) return [];
 
     const results: ToolCallResult[] = [];
 
     for (const toolName of selectedTools) {
-      const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(request);
+      const result = toolName === 'get_stats' ? await this.getStats() : await this.searchKnowledge(request, anchors);
       this.metrics.recordTool({
         name: result.name,
         status: result.status,
@@ -61,14 +61,16 @@ export class ToolRegistryService {
     }
   }
 
-  private async searchKnowledge(request: ChatRequest): Promise<ToolCallResult> {
+  private async searchKnowledge(request: ChatRequest, anchors?: AnchorResolution): Promise<ToolCallResult> {
     const start = Date.now();
     try {
       const searchRequest: SearchRequest = {
         tenantId: request.tenantId,
         query: request.message,
-        projectId: request.metadata?.projectId,
-        sourceType: request.metadata?.sourceType,
+        projectId: request.metadata?.projectId ?? anchors?.appliedFilters.projectId,
+        sourceType: request.metadata?.sourceType ?? anchors?.appliedFilters.sourceType,
+        status: anchors?.appliedFilters.status,
+        tags: anchors?.appliedFilters.tags,
         limit: config.tools.searchLimit,
         useHybridRetrieval: request.controls?.hybridRetrievalEnabled ?? config.retrieval.hybridEnabled,
       };
