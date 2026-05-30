@@ -647,6 +647,8 @@ Der Markdown-Report ist bewusst consulting-tauglich aufgebaut: Management Summar
 
 Wenn `STUB_EXTERNAL_SERVICES=true` gesetzt ist, wird der Report explizit als Stub-Ergebnis markiert. Das ist eine technische Funktionsprüfung der Pipeline und keine produktiv belastbare Enterprise-Bewertung mit echten Chunks, echten Retrieval-Scores und echten LLM-Latenzen.
 
+Die erzeugten Benchmark-Artefakte sind Runtime-Daten und werden nicht im Git-Repo versioniert. Versioniert bleiben nur die Benchmark-Cases und kuratierte Konfiguration wie `data/anchors.json`.
+
 Ältere Benchmark-Historien können zusätzlich noch `toolComparison` enthalten mit:
 
 - Tokens ohne/mit Tools
@@ -1074,7 +1076,7 @@ docker compose up --build
 Das Compose-Setup startet:
 
 - `orchestrator` auf Port `3001`
-- `qdrant` auf `127.0.0.1:6333`
+- `qdrant` auf `127.0.0.1:6333` mit fest gepinntem Image-Tag
 - persistente Volumes für `./data`, `./reports` und Qdrant-Storage
 - einen Container-Healthcheck für den Orchestrator
 
@@ -1153,7 +1155,7 @@ Backup-Hinweise:
 - Qdrant liegt im Docker-Volume `qdrant_data`
 - Runtime-JSON, Benchmark-History und Payload-Store liegen unter `./data`
 - `data/anchors.json` ist kuratierte Konfiguration und wird bewusst versioniert
-- Benchmark-Reports liegen unter `./reports`
+- generierte Benchmark-Reports liegen unter `./reports` und werden nicht versioniert
 - `data/privacy-payloads.json` enthält potenziell personenbezogene Daten und wird nicht ins Git-Repo committed
 
 ### Tailscale / VPN

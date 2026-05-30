@@ -129,7 +129,7 @@ Sichern:
 - Ordner `./data`
 - Ordner `./reports`
 
-`data/anchors.json` ist Konfiguration und sollte über Git aktualisiert werden. Runtime-Dateien wie Sparse-Index, Benchmark-History und Privacy-Payloads bleiben lokale Daten und gehören ins Backup-Konzept.
+`data/anchors.json` ist Konfiguration und sollte über Git aktualisiert werden. Runtime-Dateien wie Sparse-Index, Benchmark-History, User-Insights, Benchmark-Reports und Privacy-Payloads bleiben lokale Daten und gehören ins Backup-Konzept.
 
 Beispiel:
 
