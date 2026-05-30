@@ -52,7 +52,10 @@ cd ai-agent-orchestrator-backend
 cp deploy/env.vps.example .env
 nano .env
 mkdir -p data reports
+test -f data/anchors.json
 ```
+
+`data/anchors.json` ist kuratierte Anchor-Konfiguration und liegt im Repo. Sie muss auf dem Host vorhanden sein, weil Compose `./data:/app/data` mountet und damit den Image-internen `/app/data`-Ordner überdeckt.
 
 Pflichtwerte in `.env` ersetzen:
 
@@ -125,6 +128,8 @@ Sichern:
 - Docker Volume `qdrant_data`
 - Ordner `./data`
 - Ordner `./reports`
+
+`data/anchors.json` ist Konfiguration und sollte über Git aktualisiert werden. Runtime-Dateien wie Sparse-Index, Benchmark-History und Privacy-Payloads bleiben lokale Daten und gehören ins Backup-Konzept.
 
 Beispiel:
 

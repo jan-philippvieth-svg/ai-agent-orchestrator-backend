@@ -1096,10 +1096,13 @@ cd ai-agent-orchestrator-backend
 cp deploy/env.vps.example .env
 nano .env
 mkdir -p data reports
+test -f data/anchors.json
 docker compose up -d --build
 docker compose ps
 curl -s http://localhost:3001/health -H "x-api-key: <API_KEY_AUS_ENV>"
 ```
+
+Wichtig: `data/anchors.json` ist Teil des Repos und muss im Host-Ordner `./data` vorhanden sein, weil Docker Compose `./data:/app/data` mountet. Dadurch bleibt die Anchor Registry reviewbar und kann über Git aktualisiert werden, während Runtime-Dateien wie `data/sparse-index.json`, `data/privacy-payloads.json` und Benchmark-Historien lokal bleiben.
 
 Wichtige `.env`-Werte vor dem Start ersetzen:
 
@@ -1149,6 +1152,7 @@ Backup-Hinweise:
 
 - Qdrant liegt im Docker-Volume `qdrant_data`
 - Runtime-JSON, Benchmark-History und Payload-Store liegen unter `./data`
+- `data/anchors.json` ist kuratierte Konfiguration und wird bewusst versioniert
 - Benchmark-Reports liegen unter `./reports`
 - `data/privacy-payloads.json` enthält potenziell personenbezogene Daten und wird nicht ins Git-Repo committed
 
