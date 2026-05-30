@@ -19,6 +19,7 @@ import { modelsRoutes } from './routes/models.routes.js';
 import { privacyRoutes } from './routes/privacy.routes.js';
 import { searchRoutes } from './routes/search.routes.js';
 import { uiRoutes } from './routes/ui.routes.js';
+const { 'upgrade-insecure-requests': _upgradeInsecureRequests, ...cspDefaults } = helmet.contentSecurityPolicy.getDefaultDirectives();
 export async function buildApp() {
     const app = fastify({
         logger: true,
@@ -29,6 +30,10 @@ export async function buildApp() {
     });
     await app.register(helmet, {
         hsts: config.bff.cookieSecure,
+        contentSecurityPolicy: {
+            useDefaults: false,
+            directives: cspDefaults,
+        },
     });
     await app.register(cors, {
         credentials: true,

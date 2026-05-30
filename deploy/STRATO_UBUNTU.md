@@ -52,10 +52,13 @@ cd ai-agent-orchestrator-backend
 cp deploy/env.vps.example .env
 nano .env
 mkdir -p data reports
+sudo chown -R 1000:1000 data reports
 test -f data/anchors.json
 ```
 
 `data/anchors.json` ist kuratierte Anchor-Konfiguration und liegt im Repo. Sie muss auf dem Host vorhanden sein, weil Compose `./data:/app/data` mountet und damit den Image-internen `/app/data`-Ordner überdeckt.
+
+Der Container läuft als User `node` mit UID `1000`. Die Host-Ordner `data` und `reports` müssen deshalb für UID `1000` schreibbar sein, sonst können Runtime-Dateien wie `data/user-insights.json`, Sparse-Index oder Benchmark-Reports nicht geschrieben werden.
 
 Pflichtwerte in `.env` ersetzen:
 
@@ -86,6 +89,34 @@ LLM_SMALL_URL=http://host.docker.internal:1234/v1/chat/completions
 LLM_MEDIUM_URL=http://host.docker.internal:1235/v1/chat/completions
 LLM_LARGE_URL=http://host.docker.internal:1236/v1/chat/completions
 EMBEDDING_URL=http://host.docker.internal:11434/api/embeddings
+```
+
+Ollama muss dafür auf allen Interfaces lauschen, nicht nur auf `127.0.0.1`. Bei systemd:
+
+```bash
+sudo systemctl edit ollama
+```
+
+Eintragen:
+
+```ini
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+```
+
+Danach:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+ss -tulpn | grep 11434
+```
+
+Falls UFW Docker-zu-Host-Traffic blockiert:
+
+```bash
+sudo ufw allow in on docker0 to any port 11434
+sudo ufw allow in on br-* to any port 11434
 ```
 
 Wenn die Modelle auf dem Mac Studio laufen, nutze eine Tailscale/VPN-Adresse:
@@ -183,6 +214,13 @@ Caddy/HTTPS prüfen:
 
 ```bash
 docker compose -f docker-compose.strato.yml logs caddy
+```
+
+Volume-Rechte nach einem Fresh Deploy oder Restore reparieren:
+
+```bash
+sudo chown -R 1000:1000 data reports
+docker compose -f docker-compose.strato.yml restart orchestrator
 ```
 
 ## 9. Sicherheitsnotizen

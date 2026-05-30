@@ -5,6 +5,7 @@ import { config } from '../config.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
 export class UserInsightService {
     statePath = join(process.cwd(), 'data', 'user-insights.json');
+    saveFailureLogged = false;
     async recordInteraction(input) {
         if (input.response.metadata.guard.blocked)
             return;
@@ -164,7 +165,16 @@ export class UserInsightService {
         }
     }
     async save(state) {
-        await mkdir(dirname(this.statePath), { recursive: true });
-        await writeFile(this.statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+        try {
+            await mkdir(dirname(this.statePath), { recursive: true });
+            await writeFile(this.statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+        }
+        catch (error) {
+            if (!this.saveFailureLogged) {
+                this.saveFailureLogged = true;
+                const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : 'unknown';
+                console.warn({ event: 'user_insights_write_failed', code });
+            }
+        }
     }
 }

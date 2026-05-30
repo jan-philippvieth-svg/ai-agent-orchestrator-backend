@@ -1117,6 +1117,7 @@ cd ai-agent-orchestrator-backend
 cp deploy/env.vps.example .env
 nano .env
 mkdir -p data reports
+sudo chown -R 1000:1000 data reports
 test -f data/anchors.json
 docker compose up -d --build
 docker compose ps
@@ -1124,6 +1125,8 @@ curl -s http://localhost:3001/health -H "x-api-key: <API_KEY_AUS_ENV>"
 ```
 
 Wichtig: `data/anchors.json` ist Teil des Repos und muss im Host-Ordner `./data` vorhanden sein, weil Docker Compose `./data:/app/data` mountet. Dadurch bleibt die Anchor Registry reviewbar und kann über Git aktualisiert werden, während Runtime-Dateien wie `data/sparse-index.json`, `data/privacy-payloads.json` und Benchmark-Historien lokal bleiben.
+
+Der Container läuft als User `node` mit UID `1000`. Auf Linux-Hosts müssen `./data` und `./reports` daher für UID `1000` schreibbar sein, sonst können User-Insights, Sparse-Index, Privacy-Payloads oder Benchmark-Reports nicht persistiert werden.
 
 Wichtige `.env`-Werte vor dem Start ersetzen:
 
@@ -1150,6 +1153,8 @@ Beispiele:
 LLM_SMALL_URL=http://host.docker.internal:1234/v1/chat/completions
 EMBEDDING_URL=http://host.docker.internal:11434/api/embeddings
 ```
+
+Für Ollama auf demselben Host muss `OLLAMA_HOST=0.0.0.0` im systemd-Service gesetzt sein. Wenn UFW aktiv ist, muss Docker-zu-Host-Traffic auf den Ollama-Port erlaubt werden, z. B. `ufw allow in on docker0 to any port 11434`.
 
 Updates:
 
