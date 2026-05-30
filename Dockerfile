@@ -15,6 +15,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY web ./web
+COPY scripts/init-qdrant-collection.js ./scripts/init-qdrant-collection.js
 COPY data/anchors.json ./data/anchors.json
 COPY .env.example ./.env.example
 RUN mkdir -p data reports && chown -R node:node /app

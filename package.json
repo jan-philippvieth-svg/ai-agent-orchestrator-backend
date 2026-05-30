@@ -10,6 +10,7 @@
     "start": "node dist/server.js",
     "test": "npm run build && node scripts/smoke-test.js",
     "smoke": "npm run build && node scripts/smoke-test.js",
+    "qdrant:init": "node scripts/init-qdrant-collection.js",
     "benchmark": "npm run build && node dist/benchmark/benchmarkCli.js"
   },
   "dependencies": {

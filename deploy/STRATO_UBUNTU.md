@@ -64,6 +64,9 @@ APP_DOMAIN=ai.example.com
 API_KEY=<long-random-secret>
 BFF_DEV_LOGIN_KEY=<long-random-login-secret>
 BFF_SESSION_SECRET=<openssl-rand-hex-32>
+QDRANT_API_KEY=<openssl-rand-hex-32>
+QDRANT_VECTOR_SIZE=768
+QDRANT_DISTANCE=Cosine
 CORS_ALLOWED_ORIGINS=https://ai.example.com
 BFF_COOKIE_SECURE=true
 ```
@@ -98,6 +101,20 @@ EMBEDDING_URL=http://100.x.y.z:11434/api/embeddings
 docker compose -f docker-compose.strato.yml up -d --build
 docker compose -f docker-compose.strato.yml ps
 docker compose -f docker-compose.strato.yml logs -f orchestrator
+```
+
+Beim Start läuft zusätzlich `qdrant-init` einmalig durch. Der Init-Container legt die Collection aus `.env` an, falls sie noch fehlt:
+
+```env
+QDRANT_COLLECTION=holtkamp_knowledge
+QDRANT_VECTOR_SIZE=768
+QDRANT_DISTANCE=Cosine
+```
+
+Manuell prüfen:
+
+```bash
+docker compose -f docker-compose.strato.yml logs qdrant-init
 ```
 
 Healthcheck:

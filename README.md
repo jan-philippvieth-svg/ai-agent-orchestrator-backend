@@ -745,10 +745,12 @@ Benoetigt:
 ```env
 QDRANT_URL=http://localhost:6333
 QDRANT_COLLECTION=holtkamp_knowledge
-QDRANT_API_KEY=
+QDRANT_API_KEY=replace-with-long-random-qdrant-api-key
+QDRANT_VECTOR_SIZE=768
+QDRANT_DISTANCE=Cosine
 ```
 
-Qdrant sollte nicht direkt vom Browser oder extern erreichbar sein. Für lokale Tests reicht `localhost:6333`; für interne Tests sollte Qdrant nur vom Backend-Host, Container oder VPN erreichbar sein. Wenn Qdrant Auth aktiviert ist, bleibt `QDRANT_API_KEY` ausschließlich im Backend.
+Qdrant sollte nicht direkt vom Browser oder extern erreichbar sein. Für lokale Tests reicht `localhost:6333`; für interne Tests sollte Qdrant nur vom Backend-Host, Container oder VPN erreichbar sein. Im Docker-Setup ist `QDRANT_API_KEY` bewusst verpflichtend und darf nicht leer sein, weil ein leerer Compose-Wert Qdrant-Auth inkonsistent aktivieren kann. Der Key bleibt ausschließlich im Backend.
 
 ### 2. Embedding-Service
 
@@ -1042,6 +1044,7 @@ Produktivtest mit Qdrant:
 
 ```bash
 cp deploy/env.vps.example .env
+nano .env
 docker compose up --build
 ```
 
@@ -1070,6 +1073,7 @@ Für einen Produktivtest mit Qdrant:
 
 ```bash
 cp deploy/env.vps.example .env
+nano .env
 docker compose up --build
 ```
 
@@ -1077,10 +1081,25 @@ Das Compose-Setup startet:
 
 - `orchestrator` auf Port `3001`
 - `qdrant` auf `127.0.0.1:6333` mit fest gepinntem Image-Tag
+- `qdrant-init`, einen einmaligen Init-Container für die Collection `holtkamp_knowledge`
 - persistente Volumes für `./data`, `./reports` und Qdrant-Storage
 - einen Container-Healthcheck für den Orchestrator
 
 Qdrant wird absichtlich nur an `127.0.0.1` gebunden, damit kein Browser oder anderes Gerät direkt auf die Vektordatenbank zugreifen muss.
+
+Der Init-Container erstellt die Qdrant-Collection idempotent, falls sie noch fehlt. Standardwerte:
+
+```env
+QDRANT_COLLECTION=holtkamp_knowledge
+QDRANT_VECTOR_SIZE=768
+QDRANT_DISTANCE=Cosine
+```
+
+Manuell kann derselbe Schritt auch ohne Compose ausgeführt werden:
+
+```bash
+npm.cmd run qdrant:init
+```
 
 ### VPS Deployment
 
@@ -1111,7 +1130,7 @@ Wichtige `.env`-Werte vor dem Start ersetzen:
 - `API_KEY`
 - `BFF_DEV_LOGIN_KEY`
 - `BFF_SESSION_SECRET`, z. B. `openssl rand -hex 32`
-- `QDRANT_API_KEY`, wenn Qdrant Auth aktiv sein soll
+- `QDRANT_API_KEY`, nicht leer lassen, z. B. `openssl rand -hex 32`
 - `LLM_*_URL` und `EMBEDDING_URL`
 - `CORS_ALLOWED_ORIGINS`
 
@@ -1668,7 +1687,9 @@ PORT=3001
 API_KEY=dev-secret
 QDRANT_URL=http://localhost:6333
 QDRANT_COLLECTION=holtkamp_knowledge
-QDRANT_API_KEY=
+QDRANT_API_KEY=replace-with-long-random-qdrant-api-key
+QDRANT_VECTOR_SIZE=768
+QDRANT_DISTANCE=Cosine
 LLM_SMALL_URL=http://localhost:1234/v1/chat/completions
 LLM_MEDIUM_URL=http://localhost:1235/v1/chat/completions
 LLM_LARGE_URL=http://localhost:1236/v1/chat/completions
