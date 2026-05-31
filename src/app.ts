@@ -34,6 +34,7 @@ export async function buildApp() {
     bodyLimit: 2_500_000,
   });
 
+  const { 'upgrade-insecure-requests': _drop, ...cspDefaults } = helmet.contentSecurityPolicy.getDefaultDirectives();
   await app.register(helmet, {
     hsts: config.bff.cookieSecure,
     contentSecurityPolicy: {

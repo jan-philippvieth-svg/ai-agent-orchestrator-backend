@@ -73,5 +73,71 @@ ${report.results
 - JSON latest: \`data/benchmark-results/latest.json\`
 - Historie: \`data/benchmark-history.json\`
 - Markdown: \`reports/benchmark-report.md\`
+${report.enterprise ? renderEnterpriseSection(report.enterprise) : ''}`;
+}
+
+function renderEnterpriseSection(e: NonNullable<import('./benchmarkTypes.js').BenchmarkRunReport['enterprise']>): string {
+  const tr = e.toolRouting;
+  const cr = e.contextReduction;
+  const mr = e.modelRouting;
+  const lw = e.llmWork;
+
+  return `
+## 6. Enterprise KPI: Tool-Routing
+
+Simulated catalog: **${tr.catalogSize} tools** | Test queries: **${tr.testCases}** | Avg. relevant tools per query: **${tr.avgRelevantToolsPerQuery}**
+
+| Metrik | Wert |
+| --- | ---: |
+| Tool-Token-Baseline (alle Tools × Queries) | ${tr.toolTokensBaseline.toLocaleString('de-DE')} |
+| Tool-Token injiziert (nur relevante Tools) | ${tr.toolTokensInjected.toLocaleString('de-DE')} |
+| Tool-Token eingespart | ${tr.toolTokensSaved.toLocaleString('de-DE')} |
+| Tool-Reduktion | **${tr.toolReductionPercent} %** |
+
+| Query | Kategorie | Alle Tools | Relevante Tools | Anzahl | Einsparung |
+| --- | --- | ---: | ---: | ---: | ---: |
+${tr.cases.map((c) => `| ${c.query.slice(0, 50)} | ${c.category} | ${c.allToolsTokens} | ${c.relevantToolsTokens} | ${c.relevantToolCount} | ${c.reductionPercent} % |`).join('\n')}
+
+## 7. Enterprise KPI: Kontextreduktion
+
+topK = ${cr.collections[0]?.topK ?? 5} | Ø Dokument-Token: ${cr.collections[0]?.avgDocTokens ?? '-'}
+
+| Sammlung (Docs) | Baseline Tokens | Injizierte Tokens | Eingespart | Reduktion |
+| ---: | ---: | ---: | ---: | ---: |
+${cr.collections.map((c) => `| ${c.collectionSize.toLocaleString('de-DE')} | ${c.contextTokensBaseline.toLocaleString('de-DE')} | ${c.contextTokensInjected.toLocaleString('de-DE')} | ${c.contextTokensSaved.toLocaleString('de-DE')} | **${c.contextReductionPercent} %** |`).join('\n')}
+
+## 8. Enterprise KPI: Modell-Routing & Kostenanalyse
+
+Preise pro 1 Mio Token (USD) — small ${mr.pricing.small.inputPer1M}/${mr.pricing.small.outputPer1M} | medium ${mr.pricing.medium.inputPer1M}/${mr.pricing.medium.outputPer1M} | large ${mr.pricing.large.inputPer1M}/${mr.pricing.large.outputPer1M}
+
+| Metrik | Wert |
+| --- | ---: |
+| Test-Queries | ${mr.testCases} |
+| Baseline-Kosten (alle → large) | $ ${mr.baselineCostUsd.toFixed(6)} |
+| Optimierte Kosten (geroutetes Modell) | $ ${mr.optimizedCostUsd.toFixed(6)} |
+| Eingespart | $ ${mr.savedCostUsd.toFixed(6)} |
+| Kosteneinsparung | **${mr.savedCostPercent} %** |
+| Modellverteilung | small: ${mr.modelDistribution.small} / medium: ${mr.modelDistribution.medium} / large: ${mr.modelDistribution.large} |
+| Hochrechnung 1 Mio Queries/Monat | **$ ${mr.projectedMonthlySavingsUsd.toLocaleString('en-US')} Einsparung** |
+
+| Query | Klassifikation | Modell | In-Tokens | Out-Tokens | Baseline $ | Optimiert $ | Einsparung $ |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+${mr.cases.map((c) => `| ${c.query.slice(0, 40)} | ${c.classification} | ${c.optimizedModel} | ${c.inputTokens} | ${c.outputTokens} | ${c.baselineCostUsd.toFixed(6)} | ${c.optimizedCostUsd.toFixed(6)} | ${c.savedCostUsd.toFixed(6)} |`).join('\n')}
+
+## 9. Enterprise KPI: LLM Work Units
+
+Gewichte — small: ${lw.weights.small} | medium: ${lw.weights.medium} | large: ${lw.weights.large} (pro 1.000 Token)
+
+| Metrik | Wert |
+| --- | ---: |
+| Test-Queries | ${lw.testCases} |
+| Baseline Work Units (alle → large) | ${lw.baselineLlmWorkUnits.toFixed(3)} |
+| Actual Work Units (geroutetes Modell) | ${lw.actualLlmWorkUnits.toFixed(3)} |
+| Eingespart | ${lw.savedLlmWorkUnits.toFixed(3)} |
+| LLM-Work-Einsparung | **${lw.savedLlmWorkPercent} %** |
+
+| Query | Klassifikation | Modell | Token | Baseline WU | Actual WU | Eingespart WU |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+${lw.cases.map((c) => `| ${c.query.slice(0, 40)} | ${c.classification} | ${c.optimizedModel} | ${c.tokenCount} | ${c.baselineWorkUnits} | ${c.actualWorkUnits} | ${c.savedWorkUnits} |`).join('\n')}
 `;
 }

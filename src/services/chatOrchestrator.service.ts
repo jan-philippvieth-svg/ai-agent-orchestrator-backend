@@ -14,6 +14,7 @@ import { PromptGuardService } from './promptGuard.service.js';
 import { RetrievalService, type RetrievalResult } from './retrieval.service.js';
 import { ToolRegistryService } from './toolRegistry.service.js';
 import { ToolRouterService } from './toolRouter.service.js';
+import { ConversationContextService } from './conversationContext.service.js';
 import { UserInsightService } from './userInsight.service.js';
 
 interface ChatOrchestratorOptions {
@@ -33,6 +34,7 @@ export class ChatOrchestratorService {
     private readonly metrics = MetricsService.getInstance(),
     private readonly efficiency = new EfficiencyEstimatorService(),
     private readonly insights = new UserInsightService(),
+    private readonly conversationCtx = ConversationContextService.getInstance(),
     private readonly promptGuard = new PromptGuardService(),
     private readonly cache = CacheService.getInstance(),
     private readonly tools = new ToolRegistryService(),
@@ -58,7 +60,20 @@ export class ChatOrchestratorService {
           risk: 'low' as const,
         };
     const guardedBody: ChatRequest = { ...body, message: guard.sanitizedMessage };
-    const classification = this.classifier.classify(guardedBody.message);
+
+    // ── Conversation context resolution ──────────────────────────────────────
+    const serverHistory = guardedBody.conversationId
+      ? this.conversationCtx.getHistory(guardedBody.conversationId)
+      : [];
+    const effectiveHistory = guardedBody.messageHistory ?? serverHistory;
+    const { resolvedIntent, isFollowUp, contextForPrompt } = this.conversationCtx.resolve(
+      guardedBody.message,
+      effectiveHistory,
+    );
+
+    // Classify against the resolved intent so follow-ups like "Dieses Jahr"
+    // inherit the complexity of their originating topic.
+    const classification = this.classifier.classify(resolvedIntent);
 
     if (!guard.allowed) {
       this.metrics.recordGuard({
@@ -149,6 +164,7 @@ export class ChatOrchestratorService {
       config.cache.enabled &&
       cacheEnabled &&
       classification === 'simple' &&
+      !isFollowUp &&                // follow-up answers are context-dependent; never cache
       !guardedBody.useRetrieval &&
       selectedModel === 'small' &&
       !guard.categories.length;
@@ -156,7 +172,8 @@ export class ChatOrchestratorService {
       ? this.cache.buildChatKey({
           tenantId: guardedBody.tenantId,
           userId: guardedBody.userId,
-          message: guardedBody.message,
+          conversationId: guardedBody.conversationId,
+          resolvedIntent,           // was: message — prevents "OK/Ja" collisions
           selectedModel,
           preferredModel: guardedBody.preferredModel,
         })
@@ -238,7 +255,7 @@ export class ChatOrchestratorService {
       try {
         const searchRequest: SearchRequest = {
           tenantId: guardedBody.tenantId,
-          query: guardedBody.message,
+          query: resolvedIntent,    // follow-ups search by resolved intent, not "Ja"/"OK"
           projectId: guardedBody.metadata?.projectId ?? anchorResolution.appliedFilters.projectId,
           sourceType: guardedBody.metadata?.sourceType ?? anchorResolution.appliedFilters.sourceType,
           status: anchorResolution.appliedFilters.status,
@@ -279,7 +296,7 @@ export class ChatOrchestratorService {
     const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
     warnings.push(...toolWarnings);
 
-    const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected);
+    const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected, contextForPrompt);
     const completion = await this.llm.complete({
       modelSize: selectedModel,
       messages: [
@@ -389,8 +406,18 @@ export class ChatOrchestratorService {
           savedLlmWorkUnits: efficiency.savedLlmWorkUnits,
           method: efficiency.method,
         },
+        context: {
+          isFollowUp,
+          resolvedIntent,
+          historyLength: effectiveHistory.length,
+        },
       },
     };
+
+    // Persist this turn so the next request can resolve follow-ups server-side.
+    if (guardedBody.conversationId) {
+      this.conversationCtx.addTurn(guardedBody.conversationId, guardedBody.message, response.answer);
+    }
 
     await this.insights.recordInteraction({
       tenantId: guardedBody.tenantId,

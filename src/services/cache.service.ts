@@ -58,12 +58,15 @@ export class CacheService {
   buildChatKey(input: {
     tenantId: string;
     userId: string;
-    message: string;
+    conversationId: string | undefined;
+    resolvedIntent: string;
     selectedModel: string;
     preferredModel: string;
   }): string {
-    const messageHash = createHash('sha256').update(input.message.toLowerCase().trim()).digest('hex');
-    return ['chat', input.tenantId, input.userId, input.selectedModel, input.preferredModel, messageHash].join(':');
+    const intentHash = createHash('sha256').update(input.resolvedIntent.toLowerCase().trim()).digest('hex');
+    // conversationId scopes the key so "OK" from different conversations never collide
+    const scope = input.conversationId ?? 'stateless';
+    return ['chat', input.tenantId, input.userId, scope, input.selectedModel, input.preferredModel, intentHash].join(':');
   }
 
   toChatCacheValue(response: ChatResponse): ChatCacheValue {

@@ -1,4 +1,4 @@
-import type { SearchResult, ToolCallResult, ToolSelection } from '../types/index.js';
+import type { ConversationMessage, SearchResult, ToolCallResult, ToolSelection } from '../types/index.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
 
 export class PromptBuilderService {
@@ -7,6 +7,7 @@ export class PromptBuilderService {
     chunks: SearchResult[],
     toolResults: ToolCallResult[] = [],
     selectedTools: ToolSelection[] = [],
+    conversationContext: ConversationMessage[] = [],
   ): { systemPrompt: string; userPrompt: string; tokensEstimated: number } {
     const selectedChunks = this.reduceChunks(chunks);
     const context = selectedChunks
@@ -39,7 +40,15 @@ export class PromptBuilderService {
       'Antworte strukturiert, aber ohne unnoetig lange Vorrede.',
     ].join(' ');
 
+    const conversationSection =
+      conversationContext.length > 0
+        ? `<conversation_context>\n${conversationContext
+            .map((m) => `[${m.role === 'user' ? 'Nutzer' : 'Assistent'}] ${m.content}`)
+            .join('\n')}\n</conversation_context>`
+        : '';
+
     const sections = [
+      conversationSection,
       context ? `<context_untrusted>\n${context}\n</context_untrusted>` : '',
       toolList ? `<available_tools>\n${toolList}\n</available_tools>` : '',
       tools ? `<tool_results_untrusted>\n${tools}\n</tool_results_untrusted>` : '',

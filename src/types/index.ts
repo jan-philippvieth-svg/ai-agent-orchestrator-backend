@@ -18,10 +18,45 @@ export interface ChatControls {
   semanticAnchorsEnabled?: boolean;
 }
 
+export interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ConversationSummary {
+  text: string;
+  generatedAt: string;
+  /** Total message count when the summary was last generated. */
+  coveredMessages: number;
+}
+
+export interface SessionFacts {
+  topic?: string;
+  timeContext?: string;
+  detailLevel?: 'technical' | 'executive' | 'brief';
+  lastUpdatedAt: string;
+}
+
+export interface ContextPackage {
+  isFollowUp: boolean;
+  resolvedIntent: string;
+  topicMessage: string;
+  /** Sliding window: last 5 turns shown verbatim in the prompt. */
+  recentTurns: ConversationMessage[];
+  /** LLM-generated summary of turns older than the sliding window. */
+  summary?: ConversationSummary;
+  /** Pattern-extracted structured facts (topic, time, detail level). */
+  facts: SessionFacts;
+  /** Older turns retrieved via keyword matching against resolvedIntent. */
+  retrievedContext: ConversationMessage[];
+}
+
 export interface ChatRequest {
   tenantId: string;
   userId: string;
   message: string;
+  conversationId?: string;
+  messageHistory?: ConversationMessage[];
   useRetrieval: boolean;
   preferredModel: PreferredModel;
   controls?: ChatControls;
@@ -133,6 +168,11 @@ export interface ChatResponse {
       baselineLlmWorkUnits: number;
       savedLlmWorkUnits: number;
       method: string;
+    };
+    context?: {
+      isFollowUp: boolean;
+      resolvedIntent: string;
+      historyLength: number;
     };
   };
 }

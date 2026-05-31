@@ -11,7 +11,10 @@
     "test": "npm run build && node scripts/smoke-test.js",
     "smoke": "npm run build && node scripts/smoke-test.js",
     "qdrant:init": "node scripts/init-qdrant-collection.js",
-    "benchmark": "npm run build && node dist/benchmark/benchmarkCli.js"
+    "benchmark": "npm run build && node dist/benchmark/benchmarkCli.js",
+    "test:unit": "npm run build && node --test dist/services/__tests__/classifier.service.test.js",
+    "test:unit:context": "npm run build && node --test dist/services/__tests__/conversationContext.service.test.js",
+    "test:unit:all": "npm run build && node --test dist/services/__tests__/classifier.service.test.js dist/services/__tests__/conversationContext.service.test.js"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",

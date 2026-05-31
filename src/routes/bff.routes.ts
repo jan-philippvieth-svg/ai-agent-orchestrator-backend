@@ -104,7 +104,7 @@ export async function bffRoutes(app: FastifyInstance): Promise<void> {
       ...parsed.data,
       tenantId: session.tenantId,
       userId: session.userId,
-    }, { correlationId: request.correlationId });
+    }, { correlationId: request.correlationId, allowLargeModelOverride: true });
   });
 
   app.post('/bff/search', async (request, reply) => {

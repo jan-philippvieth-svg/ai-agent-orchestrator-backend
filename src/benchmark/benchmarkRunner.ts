@@ -18,6 +18,7 @@ import type {
   BenchmarkScenario,
   BenchmarkScenarioResult,
 } from './benchmarkTypes.js';
+import { runAllEnterpriseBenchmarks } from './enterpriseBenchmarks.js';
 import { renderBenchmarkMarkdown } from './markdownReport.js';
 
 const casesPath = join(process.cwd(), 'data', 'benchmark-cases.json');
@@ -49,6 +50,7 @@ export class BenchmarkRunner {
     }
 
     const report = this.buildReport(results);
+    report.enterprise = runAllEnterpriseBenchmarks();
     await this.writeReports(report);
     return report;
   }

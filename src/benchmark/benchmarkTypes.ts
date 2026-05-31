@@ -1,5 +1,105 @@
 import type { Classification, ModelSize, PreferredModel, SourceType } from '../types/index.js';
 
+// ── Enterprise Benchmark Types ──────────────────────────────────────────────
+
+export interface ModelPricing {
+  small: { inputPer1M: number; outputPer1M: number };
+  medium: { inputPer1M: number; outputPer1M: number };
+  large: { inputPer1M: number; outputPer1M: number };
+}
+
+export interface ToolRoutingCaseResult {
+  query: string;
+  category: string;
+  allToolsTokens: number;
+  relevantToolsTokens: number;
+  relevantToolCount: number;
+  savedTokens: number;
+  reductionPercent: number;
+}
+
+export interface ToolRoutingResult {
+  catalogSize: number;
+  testCases: number;
+  toolTokensBaseline: number;
+  toolTokensInjected: number;
+  toolTokensSaved: number;
+  toolReductionPercent: number;
+  avgRelevantToolsPerQuery: number;
+  cases: ToolRoutingCaseResult[];
+}
+
+export interface ContextCollectionResult {
+  collectionSize: number;
+  topK: number;
+  avgDocTokens: number;
+  contextTokensBaseline: number;
+  contextTokensInjected: number;
+  contextTokensSaved: number;
+  contextReductionPercent: number;
+}
+
+export interface ContextReductionResult {
+  collections: ContextCollectionResult[];
+}
+
+export interface ModelRoutingCaseResult {
+  query: string;
+  classification: string;
+  baselineModel: 'large';
+  optimizedModel: string;
+  inputTokens: number;
+  outputTokens: number;
+  baselineCostUsd: number;
+  optimizedCostUsd: number;
+  savedCostUsd: number;
+}
+
+export interface ModelRoutingResult {
+  pricing: ModelPricing;
+  testCases: number;
+  modelDistribution: { small: number; medium: number; large: number };
+  baselineCostUsd: number;
+  optimizedCostUsd: number;
+  savedCostUsd: number;
+  savedCostPercent: number;
+  projectedMonthlySavingsUsd: number;
+  cases: ModelRoutingCaseResult[];
+}
+
+export interface LlmWorkWeights {
+  small: number;
+  medium: number;
+  large: number;
+}
+
+export interface LlmWorkCaseResult {
+  query: string;
+  classification: string;
+  optimizedModel: string;
+  tokenCount: number;
+  baselineWorkUnits: number;
+  actualWorkUnits: number;
+  savedWorkUnits: number;
+}
+
+export interface LlmWorkResult {
+  weights: LlmWorkWeights;
+  testCases: number;
+  baselineLlmWorkUnits: number;
+  actualLlmWorkUnits: number;
+  savedLlmWorkUnits: number;
+  savedLlmWorkPercent: number;
+  cases: LlmWorkCaseResult[];
+}
+
+export interface EnterpriseBenchmarkResult {
+  toolRouting: ToolRoutingResult;
+  contextReduction: ContextReductionResult;
+  modelRouting: ModelRoutingResult;
+  llmWork: LlmWorkResult;
+}
+
 export type BenchmarkScenario = 'baseline' | 'rag' | 'optimized';
 
 export interface BenchmarkCase {
@@ -112,4 +212,5 @@ export interface BenchmarkRunReport {
     recommendation: string;
   }>;
   results: BenchmarkScenarioResult[];
+  enterprise?: EnterpriseBenchmarkResult;
 }

@@ -1,5 +1,7 @@
 let csrfToken = '';
 let sessionReady = false;
+let conversationId = '';
+let conversationHistory = [];
 
 const $ = (id) => document.getElementById(id);
 
@@ -66,6 +68,8 @@ async function startSession() {
     });
     csrfToken = result.csrfToken;
     sessionReady = true;
+    conversationId = crypto.randomUUID();
+    conversationHistory = [];
     $('loginKey').value = '';
     state.sessionStatus.textContent = `${result.tenantId} / ${result.userId}`;
     state.sessionStatus.className = 'status ok';
@@ -84,6 +88,8 @@ function buildChatRequest() {
   const sourceType = $('sourceType').value.trim();
   return {
     message: state.messageInput.value.trim(),
+    conversationId,
+    messageHistory: conversationHistory.length > 0 ? conversationHistory.slice(-6) : undefined,
     useRetrieval: $('useRetrieval').checked,
     preferredModel: $('preferredModel').value,
     controls: {
@@ -124,6 +130,10 @@ async function sendChat(event) {
     const elapsed = Math.round(performance.now() - startedAt);
     addMessage('assistant', result.answer, metaSummary(result.metadata, elapsed));
     renderMetadata(result.metadata);
+    // Track conversation history for follow-up resolution
+    conversationHistory.push({ role: 'user', content: payload.message.slice(0, 1000) });
+    conversationHistory.push({ role: 'assistant', content: result.answer.slice(0, 1000) });
+    if (conversationHistory.length > 10) conversationHistory = conversationHistory.slice(-10);
   } catch (error) {
     addMessage('error', `Chat fehlgeschlagen: ${error.message}`);
   } finally {
@@ -153,9 +163,14 @@ function renderMetadata(metadata) {
       : metadata.anchors?.enabled
         ? 'kein Match'
         : 'disabled';
+  const ctxMeta = metadata.context;
+  const contextLabel = ctxMeta
+    ? `${ctxMeta.isFollowUp ? 'Follow-up' : 'direkt'} · hist:${ctxMeta.historyLength}${ctxMeta.isFollowUp ? ' · ' + ctxMeta.resolvedIntent.slice(0, 60) : ''}`
+    : '–';
   const rows = [
     ['Modell', `${metadata.selectedModel} (route: ${metadata.routedModel})`],
     ['Klassifikation', metadata.classification],
+    ['Kontext', contextLabel],
     ['Latenz', `${metadata.processingTimeMs}ms`],
     ['Chunks', String(metadata.chunksUsed)],
     ['Retrieval', retrievalLabel],
