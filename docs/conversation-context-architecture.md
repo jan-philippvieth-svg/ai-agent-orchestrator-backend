@@ -1,6 +1,6 @@
 # Conversation Context — Architecture
 
-## Previous Architecture (before this commit)
+## Baseline (before da89d30)
 
 Each chat request was stateless. The orchestrator received a raw `message` string, classified it, optionally retrieved knowledge chunks, built a prompt, and called the LLM. No history was retained between requests.
 
@@ -13,147 +13,145 @@ ChatRequest { message }
     └─ LlmService.complete(prompt)
 ```
 
-Short follow-up inputs ("Dieses Jahr", "Performance", "OK") were classified and retrieved as-is — always landing on `simple` with near-zero retrieval signal, regardless of the preceding conversation.
+Short follow-up inputs ("Dieses Jahr", "Performance", "OK") were classified and retrieved as-is — always landing on `simple` with near-zero retrieval signal.
 
 ---
 
-## Current Architecture (da89d30)
+## Current Architecture (0af8150)
 
-### New layer: `ConversationContextService`
-
-A singleton in-process store keyed by `conversationId`. Each completed turn is persisted server-side via `addTurn`. On the next request `getHistory` provides that history to the `resolve` pipeline.
+### Request flow
 
 ```
 ChatRequest { message, conversationId?, messageHistory? }
     │
     ▼
-ConversationContextService
-    ├─ getHistory(conversationId)            ← server-side store (TTL 1 h, max 20 msgs)
-    ├─ fallback to messageHistory            ← client-supplied history
-    └─ resolve(message, history)
-           ├─ isFollowUpMessage()            ← token-count + regex pattern match
-           ├─ findTopicMessage()             ← backward walk over user turns
-           └─ resolvedIntent = topic + " – " + followUp
+ConversationContextService.resolve(message, history, conversationId?)
+    ├─ getHistory(conversationId)        ← server-side store (TTL 1 h, max 20 msgs)
+    ├─ fallback to messageHistory        ← client-supplied history
+    ├─ isFollowUpMessage()               ← token-count < 12 + anchored regex patterns
+    ├─ findTopicMessage()                ← backward walk over user turns, skips follow-ups
+    ├─ resolvedIntent = topic + " – " + followUp
     │
-    ▼ resolvedIntent (or original message)
+    ├─ recentTurns  = history.slice(-6)          ← verbatim in prompt
+    ├─ archive      = history.slice(0, -6)
+    │       ├─ summary        = buildSummary(archive)      ← deterministic compression
+    │       └─ retrievedContext = retrieveContext(resolvedIntent, archive)  ← keyword match
+    └─ facts = stored.facts (incremental) OR extractFactsFromHistory(history)
+    │
+    ▼ ContextPackage
     ├─ ClassifierService.classify(resolvedIntent)   ← inherits topic complexity
     ├─ RetrievalService.retrieve(resolvedIntent)    ← searches topic, not "OK"
-    ├─ CacheService.buildChatKey(resolvedIntent)    ← collision-safe, scoped to conversationId
-    │       └─ follow-ups bypass cache entirely
-    ├─ PromptBuilderService.build(message, chunks, ..., contextForPrompt)
-    │       └─ <conversation_context> section with last ≤6 messages
+    ├─ CacheService.buildChatKey(resolvedIntent)    ← scoped to conversationId
+    │       └─ follow-ups (isFollowUp === true) bypass cache entirely
+    ├─ PromptBuilderService.build(message, chunks, tools, contextPackage)
+    │       renders in order:
+    │           <conversation_summary>   ← contextPackage.summary.text
+    │           <retrieved_context>      ← contextPackage.retrievedContext
+    │           <conversation_context>   ← contextPackage.recentTurns
+    │           <context_untrusted>      ← knowledge chunks
+    │           <available_tools> / <tool_results_untrusted>
+    │           <user_question>
     └─ LlmService.complete(prompt)
            │
-           └─ addTurn(conversationId, message, answer)   ← persist for next request
+           └─ addTurn(conversationId, message, answer)
+                  ├─ updateFacts()      ← incremental fact extraction
+                  └─ buildSummary()     ← rebuild archive compression
 ```
 
-### What each piece does
+---
+
+### Component reference
 
 | Component | Role |
 |---|---|
-| `ConversationContextService.resolve()` | Detects follow-ups, constructs `resolvedIntent`, returns sliding-window `contextForPrompt` |
+| `resolve(message, history, conversationId?)` | Returns a full `ContextPackage`; uses stored incremental state when `conversationId` is provided |
 | `isFollowUpMessage()` | Token threshold (< 12 tokens) + anchored regex patterns (confirmations, time refs, selection words) |
 | `findTopicMessage()` | Walks user messages backward, skips follow-ups, returns the last substantive message |
-| `addTurn()` / `getHistory()` | In-process map with TTL expiry and 20-message cap |
-| `resolvedIntent` | Used for classification, retrieval, and cache keying — the raw message is used only for the LLM user prompt |
-| Cache key | Scoped to `conversationId` + `resolvedIntent` hash; follow-ups (`isFollowUp === true`) are unconditionally excluded |
-| `contextForPrompt` | Last 6 messages injected into `<conversation_context>` in the user prompt |
-
-### Types introduced
-
-```typescript
-ConversationMessage   // { role, content } — the base turn unit
-FollowUpResolution    // service return type: isFollowUp, resolvedIntent, topicMessage, contextForPrompt
-```
-
-### Type stubs for the next phase (not yet implemented)
-
-```typescript
-ConversationSummary   // LLM-generated rolling summary of older turns
-SessionFacts          // Pattern-extracted structured facts: topic, timeContext, detailLevel
-ContextPackage        // Full context object combining recentTurns + summary + facts + retrievedContext
-```
+| `resolvedIntent` | Used for classification, retrieval, and cache keying; raw message is used only for the LLM user prompt |
+| `addTurn()` | Stores messages (cap 20), runs `updateFacts()`, rebuilds `summary` from the archive portion |
+| `getHistory()` | Returns stored messages for a `conversationId`; evicts on TTL expiry |
+| `buildSummary(archive)` | Extractive compression: each archived turn pair → one line `[U] … → [A] <first sentence>` |
+| `retrieveContext(resolvedIntent, archive)` | Tokenises intent, scores archived user messages by keyword overlap, returns top-2 pairs |
+| `applyFactsFromTurn()` | Extracts topic, timeContext, detailLevel, entities, decisions from a single user+assistant turn |
+| `extractFactsFromHistory()` | Full-scan fallback used by `resolve()` when no stored state exists |
+| Cache key | SHA-256 of `resolvedIntent` (not raw message), scoped to `conversationId` |
 
 ---
 
-## Remaining Gaps
+### Types — fully implemented
 
-### 1. `ConversationSummary` — rolling summary of older turns
-
-**Problem:** The sliding window exposes the last 6 messages verbatim. Turns older than that are silently dropped. Long conversations lose early context.
-
-**Design intent (stub in `types/index.ts`):**
 ```typescript
-interface ConversationSummary {
-  text: string;
-  generatedAt: string;
-  coveredMessages: number;
+ConversationMessage   // { role: 'user' | 'assistant', content: string }
+
+ConversationSummary {
+  text: string;            // compressed archive lines joined with \n
+  generatedAt: string;     // ISO timestamp
+  coveredMessages: number; // count of archived messages covered
 }
-```
 
-**What needs to be built:**
-- After `addTurn`, if stored history exceeds the window, invoke a small LLM call to compress the oldest N messages into a `text` summary.
-- Store the summary alongside the message array in `StoredConversation`.
-- Surface the summary in `ContextPackage.summary` and inject it above the sliding window in the prompt.
-
----
-
-### 2. `SessionFacts` — structured fact extraction
-
-**Problem:** Structured signals (topic, time period, requested detail level) are inferred implicitly through `resolvedIntent`. They are not surfaced for routing or prompt construction decisions.
-
-**Design intent (stub in `types/index.ts`):**
-```typescript
-interface SessionFacts {
-  topic?: string;
-  timeContext?: string;
+SessionFacts {
+  topic?: string;                              // first substantive user message (≤80 chars)
+  timeContext?: string;                        // e.g. "dieses Jahr", "Q1 2025"
   detailLevel?: 'technical' | 'executive' | 'brief';
-  lastUpdatedAt: string;
+  entities: string[];                          // capitalised words ≥4 chars, capped at 10
+  decisions: string[];                         // decision-marker sentences, capped at 5
+  lastUpdatedAt: string;                       // ISO timestamp of last update
 }
-```
 
-**What needs to be built:**
-- Pattern extraction from user messages (e.g. "letztes Quartal" → `timeContext: "Q4"`, "kurze Zusammenfassung" → `detailLevel: "brief"`).
-- Persist extracted facts per `conversationId` alongside the message store.
-- Use facts to influence model selection, retrieval filters, or prompt framing.
-
----
-
-### 3. `ContextPackage` — unified context object
-
-**Problem:** `ContextPackage` is defined as the intended public API of the context layer but is never constructed. The orchestrator currently destructures `FollowUpResolution` directly.
-
-**Design intent (stub in `types/index.ts`):**
-```typescript
-interface ContextPackage {
+ContextPackage {
   isFollowUp: boolean;
   resolvedIntent: string;
   topicMessage: string;
-  recentTurns: ConversationMessage[];       // sliding window
-  summary?: ConversationSummary;            // compressed older turns
-  facts: SessionFacts;                      // extracted structured facts
-  retrievedContext: ConversationMessage[];  // keyword-matched older turns
+  recentTurns: ConversationMessage[];          // last 6 messages, verbatim in prompt
+  summary?: ConversationSummary;              // present when archive exists (history > 6)
+  facts: SessionFacts;
+  retrievedContext: ConversationMessage[];    // keyword-matched older turns (up to 2 pairs)
 }
 ```
 
-**What needs to be built:**
-- Refactor `ConversationContextService.resolve()` to return `ContextPackage` instead of `FollowUpResolution`.
-- Implement `retrievedContext`: keyword matching of `resolvedIntent` against stored message history to surface relevant older turns that fall outside the sliding window but contain domain-relevant content.
-- Propagate `ContextPackage` through the orchestrator to the prompt builder.
+---
+
+### SessionFacts extraction rules
+
+| Field | Source | Rule |
+|---|---|---|
+| `topic` | User message | Set once from first non-follow-up message with ≥3 tokens; never overwritten |
+| `timeContext` | User message | 8 regex patterns in priority order; normalised labels; first match wins |
+| `detailLevel` | User + assistant | `brief` ← kurz/Kurzfassung/kompakt; `technical` ← technisch/ausführlich; `executive` ← Überblick/management |
+| `entities` | User message | Capitalised words ≥4 chars, skipping the first word of the message; deduplicated |
+| `decisions` | Assistant message | Sentences matching "ich empfehle", "wir verwenden", "zusammenfassend", etc.; first sentence per pattern |
+
+### ConversationSummary compression
+
+Archive = `storedMessages.slice(0, -6)` — everything older than the sliding window.
+
+Each user/assistant pair in the archive is compressed to one line:
+```
+[U] <user message, capped at 120 chars> → [A] <first sentence of assistant, capped at 120 chars>
+```
+
+Lines are joined with `\n`. Summary is rebuilt on every `addTurn()` call (deterministic, O(n) in archive size).
+
+### RetrievedContext keyword matching
+
+1. Tokenise `resolvedIntent`: lowercase, split on `\W+`, filter length ≥4, remove German stopwords
+2. Score each archived **user** message: count how many intent tokens appear in it
+3. Sort descending, take up to 2 with score ≥ 1
+4. For each matched message also include the immediately following assistant message
+5. Return as a flat `ConversationMessage[]`
 
 ---
 
-### 4. Long-term / cross-session memory
+## Remaining Gap
 
-**Problem:** All state is in-process with a 1-hour TTL. A conversation is permanently lost when the server restarts or the TTL expires. There is no cross-session continuity.
+### Long-term / cross-session persistence
+
+**Problem:** All state (`StoredConversation`: messages, summary, facts) lives in an in-process `Map`. It is lost on server restart or after the 1-hour TTL.
 
 **What needs to be built:**
-- Persist `StoredConversation` (messages + summary + facts) to Redis or a lightweight database.
-- Implement a `ConversationRepository` abstraction the service delegates to.
-- Define retention and deletion policies (GDPR-aligned, per-tenant).
+- A `ConversationRepository` interface abstracting the storage backend
+- A Redis or SQLite adapter implementing that interface
+- Retention and deletion policies (GDPR-aligned, per-tenant, honouring the existing `DeletionBehavior` type)
+- The service delegates `get`/`set` to the repository instead of the `Map`
 
----
-
-## Scope Boundary
-
-The current implementation stops at stateless-to-stateful follow-up resolution for a single server process within a single session TTL. Everything above the line is the next phase.
+Everything else documented above is complete and tested (72 tests, 18 suites, 0 failures).
