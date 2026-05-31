@@ -66,10 +66,12 @@ export class ChatOrchestratorService {
       ? this.conversationCtx.getHistory(guardedBody.conversationId)
       : [];
     const effectiveHistory = guardedBody.messageHistory ?? serverHistory;
-    const { resolvedIntent, isFollowUp, contextForPrompt } = this.conversationCtx.resolve(
+    const contextPackage = this.conversationCtx.resolve(
       guardedBody.message,
       effectiveHistory,
+      guardedBody.conversationId,
     );
+    const { resolvedIntent, isFollowUp } = contextPackage;
 
     // Classify against the resolved intent so follow-ups like "Dieses Jahr"
     // inherit the complexity of their originating topic.
@@ -296,7 +298,7 @@ export class ChatOrchestratorService {
     const toolWarnings = toolResults.filter((result) => result.status === 'error').map((result) => `tool_failed:${result.name}`);
     warnings.push(...toolWarnings);
 
-    const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected, contextForPrompt);
+    const prompt = this.prompts.build(guardedBody.message, chunks, toolResults, toolRouting.selected, contextPackage);
     const completion = await this.llm.complete({
       modelSize: selectedModel,
       messages: [
@@ -410,6 +412,8 @@ export class ChatOrchestratorService {
           isFollowUp,
           resolvedIntent,
           historyLength: effectiveHistory.length,
+          summaryExists: contextPackage.summary !== undefined,
+          factsExtracted: Boolean(contextPackage.facts.topic || contextPackage.facts.timeContext || contextPackage.facts.detailLevel),
         },
       },
     };

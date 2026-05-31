@@ -34,6 +34,10 @@ export interface SessionFacts {
   topic?: string;
   timeContext?: string;
   detailLevel?: 'technical' | 'executive' | 'brief';
+  /** Key nouns / technical terms seen so far in the conversation. */
+  entities: string[];
+  /** Decisions or conclusions extracted from assistant turns. */
+  decisions: string[];
   lastUpdatedAt: string;
 }
 
@@ -173,6 +177,8 @@ export interface ChatResponse {
       isFollowUp: boolean;
       resolvedIntent: string;
       historyLength: number;
+      summaryExists?: boolean;
+      factsExtracted?: boolean;
     };
   };
 }

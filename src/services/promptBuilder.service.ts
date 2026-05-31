@@ -1,4 +1,4 @@
-import type { ConversationMessage, SearchResult, ToolCallResult, ToolSelection } from '../types/index.js';
+import type { ContextPackage, SearchResult, ToolCallResult, ToolSelection } from '../types/index.js';
 import { estimateTokens } from '../utils/tokenEstimator.js';
 
 export class PromptBuilderService {
@@ -7,7 +7,7 @@ export class PromptBuilderService {
     chunks: SearchResult[],
     toolResults: ToolCallResult[] = [],
     selectedTools: ToolSelection[] = [],
-    conversationContext: ConversationMessage[] = [],
+    contextPackage?: ContextPackage,
   ): { systemPrompt: string; userPrompt: string; tokensEstimated: number } {
     const selectedChunks = this.reduceChunks(chunks);
     const context = selectedChunks
@@ -40,15 +40,30 @@ export class PromptBuilderService {
       'Antworte strukturiert, aber ohne unnoetig lange Vorrede.',
     ].join(' ');
 
-    const conversationSection =
-      conversationContext.length > 0
-        ? `<conversation_context>\n${conversationContext
+    // ── Conversation context sections ────────────────────────────────────────
+    const summarySection =
+      contextPackage?.summary?.text
+        ? `<conversation_summary covered_messages="${contextPackage.summary.coveredMessages}">\n${contextPackage.summary.text}\n</conversation_summary>`
+        : '';
+
+    const retrievedSection =
+      contextPackage?.retrievedContext && contextPackage.retrievedContext.length > 0
+        ? `<retrieved_context>\n${contextPackage.retrievedContext
+            .map((m) => `[${m.role === 'user' ? 'Nutzer' : 'Assistent'}] ${m.content}`)
+            .join('\n')}\n</retrieved_context>`
+        : '';
+
+    const recentSection =
+      contextPackage?.recentTurns && contextPackage.recentTurns.length > 0
+        ? `<conversation_context>\n${contextPackage.recentTurns
             .map((m) => `[${m.role === 'user' ? 'Nutzer' : 'Assistent'}] ${m.content}`)
             .join('\n')}\n</conversation_context>`
         : '';
 
     const sections = [
-      conversationSection,
+      summarySection,
+      retrievedSection,
+      recentSection,
       context ? `<context_untrusted>\n${context}\n</context_untrusted>` : '',
       toolList ? `<available_tools>\n${toolList}\n</available_tools>` : '',
       tools ? `<tool_results_untrusted>\n${tools}\n</tool_results_untrusted>` : '',
